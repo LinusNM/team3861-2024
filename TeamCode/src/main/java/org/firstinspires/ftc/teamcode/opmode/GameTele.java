@@ -9,10 +9,10 @@ import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.core.*;
 
 @TeleOp(name="TeleOp", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class GameTele extends LinearOpMode {
 
-    //private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
     private FastMecanum drive;
 
     @Override
@@ -20,8 +20,8 @@ public class GameTele extends LinearOpMode {
         drive = new FastMecanum(
         hardwareMap.get(DcMotor.class, "leftFront"),
         hardwareMap.get(DcMotor.class, "rightFront"),
-                hardwareMap.get(DcMotor.class, "rightRear"),
-        hardwareMap.get(DcMotor.class, "leftRear")
+                hardwareMap.get(DcMotor.class, "leftRear"),
+        hardwareMap.get(DcMotor.class, "rightRear")
         );
 
         Button dampenRoll = new Button();
@@ -33,7 +33,7 @@ public class GameTele extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        //runtime.reset();
+        runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
