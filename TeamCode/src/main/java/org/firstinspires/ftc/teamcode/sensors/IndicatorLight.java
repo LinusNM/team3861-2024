@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.sensors;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.LED;
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @TeleOp(name = "Sensor: Indicator Light", group = "Sensor")
 //@Disabled
-public class IndicatorLight {
+public class IndicatorLight extends OpMode {
 
     LED frontLED_red;
     LED frontLED_green;
