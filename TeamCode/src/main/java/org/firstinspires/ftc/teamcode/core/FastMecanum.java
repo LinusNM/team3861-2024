@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.HardwareConstants;
 public class FastMecanum extends MecanumDrive {
     private Vector4 lastPos = new Vector4();
     private ElapsedTime t = new ElapsedTime();
-    public static final double counterForce = 0.5;
+    public static final double counterForce = 0.1;
     public boolean dampenRoll = true;
 
     public FastMecanum(DcMotor a, DcMotor b, DcMotor c, DcMotor d) {
