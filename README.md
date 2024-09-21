@@ -1133,8 +1133,8 @@ Changes with version 3.2 include:
 
 * Blocks Programming Development Tool:
     - Changed "LynxI2cColorRangeSensor" block to "REV Color/range sensor" block.
-    - Fixed tooltip for ColorSensor.isLightOn block.
-    Added blocks for ColorSensor.getNormalizedColors and LynxI2cColorRangeSensor.getNormalizedColors.
+    - Fixed tooltip for org.firstinspires.ftc.teamcode.sensors.ColorSensor.isLightOn block.
+    Added blocks for org.firstinspires.ftc.teamcode.sensors.ColorSensor.getNormalizedColors and LynxI2cColorRangeSensor.getNormalizedColors.
 
 * Added example OpModes for digital touch sensor and REV Robotics Color Distance sensor.
 * User selectable color themes.
@@ -1242,7 +1242,7 @@ Changes include:
      - Added type safety to blocks for AnalogInput.
      - Added type safety to blocks for AngularVelocity.
      - Added type safety to blocks for Color.
-     - Added type safety to blocks for ColorSensor.
+     - Added type safety to blocks for org.firstinspires.ftc.teamcode.sensors.ColorSensor.
      - Added type safety to blocks for CompassSensor.
      - Added type safety to blocks for CRServo.
      - Added type safety to blocks for DigitalChannel.
@@ -1487,7 +1487,7 @@ Changes include:
  * moved specific gamepad implemnatations to the hardware library.
  * changed LICENSE file to new BSD version.
  * fixed race condition when shutting down Modern Robotics USB devices.
- * methods in the ColorSensor classes have been synchronized.
+ * methods in the org.firstinspires.ftc.teamcode.sensors.ColorSensor classes have been synchronized.
  * corrected isBusy() status to reflect end of motion.
  * corrected "back" button keycode.
  * the notSupported() method of the GyroSensor class was changed to protected (it should not be public).
