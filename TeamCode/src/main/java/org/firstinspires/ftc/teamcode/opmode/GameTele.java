@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.core.*;
 @Disabled
 public class GameTele extends LinearOpMode {
 
-    private ElapsedTime runtime = new ElapsedTime();
+    //private ElapsedTime runtime = new ElapsedTime();
     private FastMecanum drive;
 
     @Override
@@ -33,7 +33,7 @@ public class GameTele extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        runtime.reset();
+        //runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
