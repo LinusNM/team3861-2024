@@ -24,6 +24,7 @@ public class GameTele extends LinearOpMode {
         hardwareMap.get(DcMotor.class, "rightRear")
         );
 
+        drive.dampenRoll = false;
         Button dampenRoll = new Button();
 
         drive.setDirection(HardwareConstants.driveDirs);
