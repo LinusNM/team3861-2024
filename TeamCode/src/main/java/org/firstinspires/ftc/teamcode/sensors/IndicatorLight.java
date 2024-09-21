@@ -16,15 +16,8 @@ public class IndicatorLight extends LinearOpMode {
     LED frontLED_red;
     LED frontLED_green;
 
-    public void init() {
-        frontLED_green = hardwareMap.get(LED.class, "front_led_green");
-        frontLED_red = hardwareMap.get(LED.class, "front_led_red");
-    }
-
     @Override
     public void runOpMode() {
-
-        public void Indicate() {
 
             telemetry.addData("Color", ColorSensorMR.colorDetect(ColorSensorMR.colorSensor.red(), ColorSensorMR.colorSensor.green(), ColorSensorMR.colorSensor.blue()));
 
@@ -42,6 +35,5 @@ public class IndicatorLight extends LinearOpMode {
                 frontLED_red.off();
             }
         }
-    }
 }
 
