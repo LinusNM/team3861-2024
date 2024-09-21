@@ -1,3 +1,4 @@
+package org.firstinspires.ftc.teamcode.sensors;
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -52,9 +53,9 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 //@Disabled
 public class ColorSensorMR extends LinearOpMode {
 
-  ColorSensor colorSensor;    // Hardware Device Object
+  static ColorSensor colorSensor;    // Hardware Device Object
 
-public static String colorDetect(float red, float green, float blue){
+public static String colorDetect(float red, float green, float blue) {
   if (blue > red && blue > green){
     return "Blue";
   }
@@ -65,10 +66,22 @@ public static String colorDetect(float red, float green, float blue){
     return "Yellow";
   }
   else {
-    return "Na";
+    return "N/A";
   }
 }
 
+public static int colorInt() {
+  if(colorDetect(colorSensor.red(), colorSensor.green(), colorSensor.blue()).equals("Blue")) {
+    return 0;
+  }
+  else if(colorDetect(colorSensor.red(), colorSensor.green(), colorSensor.blue()).equals("Red")) {
+    return 1;
+  }
+  else if(colorDetect(colorSensor.red(), colorSensor.green(), colorSensor.blue()).equals("Yellow")) {
+    return 2;
+  }
+  else return -1;
+}
 
   @Override
   public void runOpMode() {
@@ -91,7 +104,7 @@ public static String colorDetect(float red, float green, float blue){
     // bLedOn represents the state of the LED.
     boolean bLedOn = true;
 
-    // get a reference to our ColorSensor object.
+    // get a reference to our org.firstinspires.ftc.teamcode.sensors.ColorSensor object.
     colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
 
     // Set the LED in the beginning
@@ -126,7 +139,7 @@ public static String colorDetect(float red, float green, float blue){
       telemetry.addData("Red  ", colorSensor.red());
       telemetry.addData("Green", colorSensor.green());
       telemetry.addData("Blue ", colorSensor.blue());
-      telemetry.addData("Actual Color", colorDetect(colorSensor.red(), colorSensor.green(), colorSensor.blue()));
+      telemetry.addData("Color", colorDetect(colorSensor.red(), colorSensor.green(), colorSensor.blue()));
       // change the background color to match the color detected by the RGB sensor.
       // pass a reference to the hue, saturation, and value array as an argument
       // to the HSVToColor method.
