@@ -13,11 +13,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 //@Disabled
 public class IndicatorLight extends LinearOpMode {
 
-    LED frontLED_red;
     LED frontLED_green;
+    LED frontLED_red;
 
     @Override
     public void runOpMode() {
+
+        frontLED_green = hardwareMap.get(LED.class, "front_led_green");
+        frontLED_red = hardwareMap.get(LED.class, "front_led_red");
 
             telemetry.addData("Color", ColorSensorMR.colorDetect(ColorSensorMR.colorSensor.red(), ColorSensorMR.colorSensor.green(), ColorSensorMR.colorSensor.blue()));
 
