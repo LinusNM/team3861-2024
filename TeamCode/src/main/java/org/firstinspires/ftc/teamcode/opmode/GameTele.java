@@ -20,8 +20,8 @@ public class GameTele extends LinearOpMode {
         drive = new FastMecanum(
         hardwareMap.get(DcMotor.class, "leftFront"),
         hardwareMap.get(DcMotor.class, "rightFront"),
-                hardwareMap.get(DcMotor.class, "rightRear"),
-        hardwareMap.get(DcMotor.class, "leftRear")
+                hardwareMap.get(DcMotor.class, "leftRear"),
+        hardwareMap.get(DcMotor.class, "rightRear")
         );
 
         Button dampenRoll = new Button();
