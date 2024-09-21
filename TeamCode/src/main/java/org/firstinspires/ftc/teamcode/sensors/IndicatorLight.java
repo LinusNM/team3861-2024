@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @TeleOp(name = "Sensor: Indicator Light", group = "Sensor")
 //@Disabled
-public class IndicatorLight extends OpMode {
+public class IndicatorLight extends LinearOpMode {
 
     LED frontLED_red;
     LED frontLED_green;
@@ -21,22 +21,27 @@ public class IndicatorLight extends OpMode {
         frontLED_red = hardwareMap.get(LED.class, "front_led_red");
     }
 
-    public void loop() {
-        if(ColorSensorMR.colorInt() == 0) {
-            frontLED_green.on();
-            frontLED_red.off();
-        }
-        else if(ColorSensorMR.colorInt() == 1) {
-            frontLED_green.off();
-            frontLED_red.on();
-        }
-        else if(ColorSensorMR.colorInt() == 2) {
-            frontLED_green.on();
-            frontLED_red.on();
-        }
-        else {
-            frontLED_green.off();
-            frontLED_red.off();
+    @Override
+    public void runOpMode() {
+
+        public void Indicate() {
+
+            telemetry.addData("Color", ColorSensorMR.colorDetect(ColorSensorMR.colorSensor.red(), ColorSensorMR.colorSensor.green(), ColorSensorMR.colorSensor.blue()));
+
+            if (ColorSensorMR.colorInt() == 0) {
+                frontLED_green.on();
+                frontLED_red.off();
+            } else if (ColorSensorMR.colorInt() == 1) {
+                frontLED_green.off();
+                frontLED_red.on();
+            } else if (ColorSensorMR.colorInt() == 2) {
+                frontLED_green.on();
+                frontLED_red.on();
+            } else {
+                frontLED_green.off();
+                frontLED_red.off();
+            }
         }
     }
 }
+
