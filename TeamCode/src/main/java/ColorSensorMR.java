@@ -54,6 +54,21 @@ public class ColorSensorMR extends LinearOpMode {
 
   ColorSensor colorSensor;    // Hardware Device Object
 
+public static String colorDetect(float red, float green, float blue){
+  if (blue > red && blue > green){
+    return "Blue";
+  }
+  else if (red > blue + green){
+    return "Red";
+  }
+  else if (red < blue + green) {
+    return "Yellow";
+  }
+  else {
+    return "Na";
+  }
+}
+
 
   @Override
   public void runOpMode() {
@@ -107,13 +122,11 @@ public class ColorSensorMR extends LinearOpMode {
       Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
 
       // send the info back to driver station using telemetry function.
-      telemetry.addData("LED", bLedOn ? "On" : "Off");
       telemetry.addData("Clear", colorSensor.alpha());
       telemetry.addData("Red  ", colorSensor.red());
       telemetry.addData("Green", colorSensor.green());
       telemetry.addData("Blue ", colorSensor.blue());
-      telemetry.addData("Hue", hsvValues[0]);
-
+      telemetry.addData("Actual Color", colorDetect(colorSensor.red(), colorSensor.green(), colorSensor.blue()));
       // change the background color to match the color detected by the RGB sensor.
       // pass a reference to the hue, saturation, and value array as an argument
       // to the HSVToColor method.
