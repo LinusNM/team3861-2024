@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.HardwareConstants;
 // for high-speed, high-precision teleop
 public class FastMecanum extends MecanumDrive {
     private Vector4 lastPos = new Vector4();
-    private ElapsedTime t;
+    private ElapsedTime t = new ElapsedTime();
     public static final double counterForce = 0.5;
     public boolean dampenRoll = true;
 
