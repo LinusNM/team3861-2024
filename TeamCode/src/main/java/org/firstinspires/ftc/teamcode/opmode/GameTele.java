@@ -38,9 +38,9 @@ public class GameTele extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            double axial   = gamepad1.left_stick_y;  // pushing stick forward gives negative value
-            double lateral =  -gamepad1.left_stick_x;
-            double yaw     =  -gamepad1.right_stick_x;
+            double axial   = -gamepad1.left_stick_y;  // pushing stick forward gives negative value
+            double lateral =  gamepad1.left_stick_x;
+            double yaw     =  gamepad1.right_stick_x;
 
             drive.setPower(lateral, axial, yaw);
 

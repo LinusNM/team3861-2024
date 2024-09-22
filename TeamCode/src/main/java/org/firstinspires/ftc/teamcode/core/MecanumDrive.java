@@ -10,7 +10,7 @@ public class MecanumDrive {
     protected DcMotor[] motors;
 
     public static final Vector4 forward = new Vector4(1);
-    public static final Vector4 right = new Vector4(-1, 1, 1, -1);
+    public static final Vector4 right = new Vector4(1, -1, -1, 1);
     public static final Vector4 clockwise = new Vector4(1, -1, 1, -1);
 
     public double powerMultiplier = 0.5;
