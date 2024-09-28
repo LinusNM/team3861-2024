@@ -66,13 +66,16 @@ public class IndicatorLight2 extends OpMode {
     public void loop() {
 
         telemetry.addData("Color", ColorSensorMR.colorDetect(ColorSensorMR.colorSensor.red(), ColorSensorMR.colorSensor.green(), ColorSensorMR.colorSensor.blue()));
-
+        telemetry.update();
+        //Green
         if (ColorSensorMR.colorInt() == 0) {
             frontLED_green.on();
             frontLED_red.off();
+        //Red
         } else if (ColorSensorMR.colorInt() == 1) {
             frontLED_green.off();
             frontLED_red.on();
+        //Yellow
         } else if (ColorSensorMR.colorInt() == 2) {
             frontLED_green.on();
             frontLED_red.on();
