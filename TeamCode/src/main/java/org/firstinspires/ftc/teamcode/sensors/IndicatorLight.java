@@ -22,21 +22,21 @@ public class IndicatorLight extends LinearOpMode {
         frontLED_green = hardwareMap.get(LED.class, "front_led_green");
         frontLED_red = hardwareMap.get(LED.class, "front_led_red");
 
-            telemetry.addData("Color", ColorSensorMR.colorDetect(ColorSensorMR.colorSensor.red(), ColorSensorMR.colorSensor.green(), ColorSensorMR.colorSensor.blue()));
+        telemetry.addData("Color", ColorSensorMR.colorDetect(ColorSensorMR.colorSensor.red(), ColorSensorMR.colorSensor.green(), ColorSensorMR.colorSensor.blue()));
 
-            if (ColorSensorMR.colorInt() == 0) {
-                frontLED_green.on();
-                frontLED_red.off();
-            } else if (ColorSensorMR.colorInt() == 1) {
-                frontLED_green.off();
-                frontLED_red.on();
-            } else if (ColorSensorMR.colorInt() == 2) {
-                frontLED_green.on();
-                frontLED_red.on();
-            } else {
-                frontLED_green.off();
-                frontLED_red.off();
-            }
+        if (ColorSensorMR.colorInt() == 0) {
+            frontLED_green.on();
+            frontLED_red.off();
+        } else if (ColorSensorMR.colorInt() == 1) {
+            frontLED_green.off();
+            frontLED_red.on();
+        } else if (ColorSensorMR.colorInt() == 2) {
+            frontLED_green.on();
+            frontLED_red.on();
+        } else {
+            frontLED_green.off();
+            frontLED_red.off();
         }
+    }
 }
 
