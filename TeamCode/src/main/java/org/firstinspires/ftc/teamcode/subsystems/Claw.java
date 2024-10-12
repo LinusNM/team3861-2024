@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name="Servo Control")
+@TeleOp(name="Claw Control")
 public class Claw extends LinearOpMode {
 
     Servo myServo;
@@ -22,16 +22,16 @@ public class Claw extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            // Control the servo with gamepad buttons
-            if (gamepad1.a) {
+            // x servo left - right
+            if (gamepad2.a) {
                 myServo.setPosition(1); // Move to one extreme
-            } else if (gamepad1.b) {
+            } else if (gamepad2.b) {
                 myServo.setPosition(0); // Move to the other extreme
             } else {
                 myServo.setPosition(0.5); // Return to center
             }
 
-            telemetry.addData("Servo Position", myServo.getPosition());
+            telemetry.addData("Servo Position X", myServo.getPosition());
             telemetry.update();
         }
     }
