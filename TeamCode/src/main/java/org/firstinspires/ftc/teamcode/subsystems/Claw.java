@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 public class Claw extends LinearOpMode {
 
     Servo myServoX;
-    Servo myServoY;
+    CRServo myServoY;
     Servo myServoZ;
 
     @Override
@@ -18,12 +19,12 @@ public class Claw extends LinearOpMode {
 
         // Initialize the servo
         myServoX = hardwareMap.get(Servo.class, "clawXservo"); // Replace "servoName" with the name in your config file
-        myServoY = hardwareMap.get(Servo.class, "clawYservo");
+        myServoY = hardwareMap.crservo.get("clawYservo");
         myServoZ = hardwareMap.get(Servo.class, "clawZservo");
 
         // Set the initial position
         myServoX.setPosition(0.5); // 0.5 is typically the center position
-        myServoY.setPosition(0.5);
+        myServoY.setPower(0.5);
         myServoZ.setPosition(0.5);
 
         waitForStart();
@@ -41,11 +42,11 @@ public class Claw extends LinearOpMode {
 
             // y servo up - down
             if (gamepad2.right_stick_y > 1) {
-                myServoY.setPosition(1); // Move to one extreme
+                myServoY.setPower(0.7); // Move to one extreme
             } else if (gamepad2.right_stick_y < 1) {
-                myServoY.setPosition(0); // Move to the other extreme
+                myServoY.setPower(0.3); // Move to the other extreme
             } else {
-                myServoY.setPosition(0.5); // Return to center
+                myServoY.setPower(0.5); // Return to center
             }
 
             // z servo open - close
@@ -58,7 +59,7 @@ public class Claw extends LinearOpMode {
             }
 
             telemetry.addData("Servo Position X", myServoX.getPosition());
-            telemetry.addData("Servo Position Y", myServoY.getPosition());
+            telemetry.addData("Servo Position Y", myServoY.getPower());
             telemetry.addData("Servo Position Z", myServoZ.getPosition());
             telemetry.update();
         }
