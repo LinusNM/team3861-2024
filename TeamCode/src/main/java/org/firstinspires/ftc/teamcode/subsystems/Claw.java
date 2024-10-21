@@ -11,6 +11,12 @@ import com.qualcomm.robotcore.hardware.ServoController;
 //@Disabled
 public class Claw extends LinearOpMode {
 
+    public static double servoMaxMin(double pos){
+        if(pos < 0) pos = 0;
+        else if (pos > 1) pos = 1;
+        return pos;
+    }
+
     Servo myServoX;
     CRServo myServoY;
     Servo myServoZ;
@@ -29,30 +35,31 @@ public class Claw extends LinearOpMode {
         myServoZ.setPosition(0.5);
 
         waitForStart();
-        double change = 0.000001;
-        double power = 0.367;
+        double change = 0.005;
+        double xpos = 0.5;
+        double ypos = 0.367;
 
         while (opModeIsActive()) {
 
             // x servo left - right
-            if (gamepad2.a) {
-                myServoX.setPosition(1); // Move to one extreme
-            } else if (gamepad2.b) {
-                myServoX.setPosition(0); // Move to the other extreme
+            if (gamepad2.right_stick_x > 0.1) {
+                xpos = servoMaxMin(xpos += change);
+                myServoX.setPosition(xpos); // Move to one extreme
+            } else if (gamepad2.right_stick_x < -0.1) {
+                xpos = servoMaxMin(xpos -= change);
+                myServoX.setPosition(xpos); // Move to the other extreme
             } else {
-                myServoX.setPosition(0.5); // Return to center
+                myServoX.setPosition(xpos); // Return to center
             }
 
             // y servo up - down
-            if (gamepad2.x) {
-                //myServoY.setPower(1); // Move to one extreme
-                power += change;
-            } else if (gamepad2.y) {
-                //myServoY.setPower(0); // Move to the other extreme
-                power -= change;
+            if (gamepad2.right_stick_y > 0.1) {
+                myServoY.setPower(1); // Move to one extreme
+            } else if (gamepad2.right_stick_y < -0.1) {
+                myServoY.setPower(0); // Move to the other extreme
             }
             else {
-                myServoY.setPower(power); // Return to center
+                myServoY.setPower(ypos); // Return to center
 
             }
 
@@ -68,7 +75,6 @@ public class Claw extends LinearOpMode {
             telemetry.addData("Servo Position X", myServoX.getPosition());
             telemetry.addData("Servo Position Y", myServoY.getPower());
             telemetry.addData("Servo Position Z", myServoZ.getPosition());
-            telemetry.addData("Servo power Y", power);
             telemetry.update();
         }
     }
