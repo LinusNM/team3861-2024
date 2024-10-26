@@ -17,12 +17,23 @@ import org.firstinspires.ftc.teamcode.subsystems.HingedLift.Position;
 public class GameTele extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
-    private FastMecanum drive;
+    private MecanumDrive drive;
     private HingedLift lift;
+
+    Button up = new Button();
+    Button fwd = new Button();
+    Button back = new Button();
+    Button dn = new Button();
+
+    boolean liftfwd = true;
+    int liftIndex = 0;
+
+    public static Position[] fwd_positions = {Position.DOWN, Position.LOW_CHAMBER, Position.HIGH_CHAMBER};
+    public static Position[] back_positions = {Position.REAR_COLLECT, Position.LOW_BASKET, Position.HIGH_BASKET};
 
     @Override
     public void runOpMode() {
-        drive = new FastMecanum(
+        drive = new MecanumDrive(
         hardwareMap.get(DcMotor.class, "leftFront"),
         hardwareMap.get(DcMotor.class, "rightFront"),
                 hardwareMap.get(DcMotor.class, "leftRear"),
@@ -31,10 +42,6 @@ public class GameTele extends LinearOpMode {
 
         lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
                 hardwareMap.get(DcMotor.class, "lift"));
-
-        drive.dampenRoll = false;
-        Button dampenRoll = new Button();
-        Button highBasket = new Button();
 
         drive.setDirection(HardwareConstants.driveDirs);
 
@@ -56,20 +63,44 @@ public class GameTele extends LinearOpMode {
 
             drive.setPower(lateral, axial, yaw);
 
-            dampenRoll.update(gamepad1.right_bumper);
-            highBasket.update(gamepad2.dpad_up);
-            if(dampenRoll.pressed())
-                drive.dampenRoll = !drive.dampenRoll;
-            if(highBasket.pressed())
-                lift.setPosition(lift.getCurrentPos() == Position.DOWN ? Position.HIGH_BASKET : Position.DOWN);
+            fwd.update(gamepad2.dpad_right);
+            back.update(gamepad2.dpad_left);
+            up.update(gamepad2.dpad_up);
+            dn.update(gamepad2.dpad_down);
+            if(fwd.pressed())
+                liftfwd = true;
+            else if(back.pressed())
+                liftfwd = false;
+            if(up.pressed()) {
+                liftIndex = Math.min(liftIndex + 1, back_positions.length);
+            }
+            if(dn.pressed()) {
+                liftIndex = Math.max(liftIndex - 1, 0);
+            }
 
+            if(gamepad2.right_bumper) { // manual lift control
+                lift.setPosition(Position.FREE);
+                float x = gamepad2.left_stick_x;
+                float y = gamepad2.left_stick_y;
+                if(Math.abs(y) >= 0.5) {
+                    lift.lift.setPosition(lift.lift.getPosition() + (y > 0 ? -60 : 60));
+                }
+                if(Math.abs(x) >= 0.5) {
+                    lift.hinge.setPosition(lift.hinge.getPosition() + (x > 0 ? 60 : -60));
+                }
+                lift.lift.setSpeed(1);
+                lift.hinge.setSpeed(1);
+            }
+            else{
+                lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
+            }
+            lift.update();
 
-
-            telemetry.addData("Roll Dampening", drive.dampenRoll ? "on" : "off");
             telemetry.addData("hinge pos", lift.hinge.getPosition());
-            telemetry.addData("hinge target", lift.hinge.getTarget());
-            telemetry.addData("lift pos", lift.getCurrentPos());
+            telemetry.addData("hinge target vel", lift.hinge.foo);
             telemetry.addData("hinge vel", lift.hinge.getVel());
+            telemetry.addData("lift pos", lift.lift.getPosition());
+            telemetry.addData("hinge power", lift.hinge.getPower());
             telemetry.update();
             lastmillis = runtime.milliseconds();
         }

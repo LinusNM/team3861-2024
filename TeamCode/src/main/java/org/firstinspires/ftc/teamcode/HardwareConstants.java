@@ -10,7 +10,7 @@ public class HardwareConstants {
     // arm segment lengths
     public static final double len1 = 18, len2 = 18;
 
-    public static final int[][] liftPositions = {{0, 0}, {-500, 0}};
+    public static final int[][] liftPositions = {{0, 0}, {750, 500}};
 
     public static final int liftMaxVel = 600;
 }
