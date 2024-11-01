@@ -72,7 +72,7 @@ public class GameTele extends LinearOpMode {
             else if(back.pressed())
                 liftfwd = false;
             if(up.pressed()) {
-                liftIndex = Math.min(liftIndex + 1, back_positions.length);
+                liftIndex = Math.min(liftIndex + 1, back_positions.length - 1);
             }
             if(dn.pressed()) {
                 liftIndex = Math.max(liftIndex - 1, 0);
@@ -99,7 +99,9 @@ public class GameTele extends LinearOpMode {
             telemetry.addData("hinge pos", lift.hinge.getPosition());
             telemetry.addData("hinge target vel", lift.hinge.foo);
             telemetry.addData("hinge vel", lift.hinge.getVel());
+            telemetry.addData("hinge target", lift.hinge.getTarget());
             telemetry.addData("lift pos", lift.lift.getPosition());
+            telemetry.addData("lift current pos", lift.getCurrentPos());
             telemetry.addData("hinge power", lift.hinge.getPower());
             telemetry.update();
             lastmillis = runtime.milliseconds();

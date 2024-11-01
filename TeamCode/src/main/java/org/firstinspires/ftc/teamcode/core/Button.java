@@ -24,4 +24,9 @@ public class Button {
     public boolean getState() {
         return state;
     }
+
+    public Button() {
+        state = false;
+        changed = false;
+    }
 }

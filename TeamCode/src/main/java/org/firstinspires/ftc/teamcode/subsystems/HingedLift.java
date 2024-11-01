@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareConstants;
-import org.firstinspires.ftc.teamcode.core.*;
+import org.firstinspires.ftc.teamcode.core.LiftMotor;
+import org.firstinspires.ftc.teamcode.subsystems.SampleClaw.*;
+
 
 public class HingedLift {
     public enum RunPriority {
@@ -13,24 +15,34 @@ public class HingedLift {
     }
 
     public enum Position {
-        DOWN(RunPriority.LIFT),
-        HIGH_BASKET(RunPriority.HINGE),
-        LOW_CHAMBER(RunPriority.HINGE),
-        HIGH_CHAMBER(RunPriority.HINGE),
-        LOW_BASKET(RunPriority.HINGE),
-        HANG(RunPriority.HINGE),
-        FWD_COLLECT(RunPriority.LIFT),
-        REAR_COLLECT(RunPriority.BOTH),
-        FREE(RunPriority.BOTH);
+        DOWN(0, 0, RunPriority.LIFT, ClawPosition.DOWN),
+        HIGH_BASKET(1000, 800, RunPriority.HINGE, ClawPosition.BASKET),
+        LOW_CHAMBER(400, 750, RunPriority.HINGE, ClawPosition.CHAMBER),
+        HIGH_CHAMBER(800, 750, RunPriority.HINGE, ClawPosition.CHAMBER),
+        LOW_BASKET(500, 800, RunPriority.HINGE, ClawPosition.BASKET),
+        HANG(700, 750, RunPriority.HINGE, ClawPosition.DOWN),
+        FWD_COLLECT(300, 0, RunPriority.BOTH, ClawPosition.FWD_COLLECT),
+        REAR_COLLECT(0, 1300, RunPriority.BOTH, ClawPosition.REAR_COLLECT),
+        FREE;
 
         public RunPriority priority;
+        public SampleClaw.ClawPosition clawpos;
+        public Integer liftpos;
+        public Integer hingepos;
 
-        Position(){
-            priority = RunPriority.BOTH;
+        Position(int liftpos, int hingepos, RunPriority priority, ClawPosition clawpos){
+            this.hingepos = hingepos;
+            this.liftpos = liftpos;
+            this.clawpos = clawpos;
+            this.priority = priority;
         }
 
-        Position(RunPriority priority) {
-            this.priority = priority;
+        Position(int liftpos, int hingepos) {
+            this(liftpos, hingepos, RunPriority.BOTH, ClawPosition.DOWN);
+        }
+
+        Position() {
+            clawpos = ClawPosition.DOWN;
         }
     }
     private Position currentPos;
@@ -39,25 +51,21 @@ public class HingedLift {
     private int[][] positions;
 
     public HingedLift(DcMotor hinge, DcMotor lift) {
-        this.hinge = new LiftMotor(hinge);
-        this.lift = new LiftMotor(lift);
+        this.hinge = new LiftMotor(hinge, 0, 1000);
+        this.lift = new LiftMotor(lift, 0, 500);
         positions = HardwareConstants.liftPositions;
     }
 
     public void setPosition(Position position) {
         int foo = 0;
         currentPos = position;
-        if(position == Position.DOWN)
-            foo = 0;
-        else if (position == Position.HIGH_BASKET)
-            foo = 1;
-        else if (position == Position.FREE) {
+        if (position == Position.FREE) { // all exception positions here
             hinge.setPosition(hinge.getPosition());
             lift.setPosition(lift.getPosition());
+            return;
         }
-        int[] arr = positions[foo];
-        hinge.setPosition(arr[0]);
-        lift.setPosition(arr[1]);
+        hinge.setPosition(position.hingepos);
+        lift.setPosition(position.liftpos);
     }
 
     public Position getCurrentPos() {

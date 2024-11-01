@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.core;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Function;
 import org.firstinspires.ftc.teamcode.HardwareConstants;
@@ -20,9 +21,10 @@ public class LiftMotor {
     public int min;
     public int max;
     public double foo = 0;
+    private ElapsedTime t = new ElapsedTime();
 
     public LiftMotor(DcMotor motor) {
-        maxvel = HardwareConstants.liftMaxVel;
+        maxvel = 800;
         speed = 1;
         this.motor = motor;
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -30,8 +32,9 @@ public class LiftMotor {
         motor.setDirection(DcMotor.Direction.FORWARD);
         encoder = new Encoder((DcMotorEx)motor);
         smoothing = (Integer i) -> {
-            return new Double(Math.min(0.005 * (double)i * i, maxvel * speed));
+            return new Double(-Math.min(0.005 * (double)i * i, maxvel) * ((i > 0) ? -1 : 1));
         };
+        t.reset();
     }
 
     public LiftMotor(DcMotor motor, int min, int max) {
@@ -58,9 +61,10 @@ public class LiftMotor {
 
         busy = true;
         double vel = encoder.getCorrectedVelocity();
-        double targetVel = Math.abs(smoothing.apply(posdiff)) * ((posdiff < 0) ? 1 : -1);
+        double targetVel = smoothing.apply(posdiff);
 
-        double power = (targetVel - vel) * smoothPowerMultiplier;
+        double power = (targetVel - vel) * smoothPowerMultiplier * t.milliseconds();
+        t.reset();
         //motor.setTargetPosition(motor.getCurrentPosition() + ((posdiff > 0) ? 30 : -30));
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setPower(Math.min(motor.getPower() + power, 100d));

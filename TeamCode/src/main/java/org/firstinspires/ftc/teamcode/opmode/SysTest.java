@@ -84,7 +84,9 @@ public class SysTest extends LinearOpMode {
 
             telemetry.addData("hinge pos", hinge.getPosition());
             telemetry.addData("lift pos", lift.getPosition());
-            telemetry.addData("hinge power", hinge.foo);
+            telemetry.addData("hinge target vel", hinge.foo);
+            telemetry.addData("hinge target", hinge.getTarget());
+            telemetry.addData("b", gamepad2.dpad_up);
             telemetry.update();
             lastmillis = runtime.milliseconds();
         }
