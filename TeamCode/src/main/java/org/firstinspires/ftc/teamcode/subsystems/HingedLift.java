@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.HardwareConstants;
 import org.firstinspires.ftc.teamcode.core.LiftMotor;
@@ -54,8 +55,11 @@ public class HingedLift {
 
     public HingedLift(DcMotor hinge, DcMotor lift) {
         this.hinge = new LiftMotor(hinge, 0, 1000);
-        this.lift = new LiftMotor(lift, 0, 500);
+        this.lift = new LiftMotor(lift, 0, 1000);
         positions = HardwareConstants.liftPositions;
+        //lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.lift.smoothing = (Integer x) -> {return Double.valueOf(Math.abs(x));};
     }
 
     public HingedLift(DcMotor hinge, DcMotor lift, SampleClaw claw){

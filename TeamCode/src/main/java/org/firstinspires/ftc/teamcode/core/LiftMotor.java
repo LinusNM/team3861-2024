@@ -22,6 +22,7 @@ public class LiftMotor {
     public int min;
     public int max;
     public double foo = 0;
+    public double powermul = 1;
     private ElapsedTime t = new ElapsedTime();
 
     public LiftMotor(DcMotor motor) {
@@ -68,7 +69,7 @@ public class LiftMotor {
         double power = (targetVel - vel) * smoothPowerMultiplier * t.milliseconds();
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         prevpower = Math.max(Math.min(prevpower + power, 1.0), -1.0);
-        motor.setPower(prevpower);
+        motor.setPower(prevpower * powermul);
         t.reset();
         foo = targetVel; // console out
     }

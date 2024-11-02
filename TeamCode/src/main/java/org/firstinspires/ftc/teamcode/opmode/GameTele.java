@@ -47,7 +47,6 @@ public class GameTele extends LinearOpMode {
         lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
                 hardwareMap.get(DcMotor.class, "lift"),
                 claw);
-        lift.lift.smoothing = (Integer x) -> {return Double.valueOf(Math.abs(5 * x));};
 
         drive.setDirection(HardwareConstants.driveDirs);
 
@@ -60,6 +59,7 @@ public class GameTele extends LinearOpMode {
         double lastmillis = runtime.milliseconds();
 
         lift.setPosition(Position.DOWN);
+        lift.lift.powermul = 0.75;
 
         //lift.lift.setSpeed(2);
 
@@ -97,23 +97,18 @@ public class GameTele extends LinearOpMode {
                 if(Math.abs(x) >= 0.5) {
                     lift.hinge.setPosition(lift.hinge.getPosition() + (x > 0 ? 60 : -60));
                 }
-                lift.lift.setSpeed(1);
-                lift.hinge.setSpeed(1);
             }
             else{
-                lift.lift.setSpeed(1);
-                lift.lift.setSpeed(1);
                 lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
             }
             lift.update();
 
-            telemetry.addData("hinge pos", lift.hinge.getPosition());
-            telemetry.addData("hinge actual power", lift.hinge.foo);
-            telemetry.addData("hinge vel", lift.hinge.getVel());
-            telemetry.addData("hinge target", lift.hinge.getTarget());
+            telemetry.addData("lift pos", lift.lift.getPosition());
+            telemetry.addData("lift tvel", lift.lift.foo);
+            telemetry.addData("lift vel", lift.lift.getVel());
+            telemetry.addData("lift target", lift.lift.getTarget());
             telemetry.addData("lift pos", lift.lift.getPosition());
             telemetry.addData("lift current pos", lift.getCurrentPos());
-            telemetry.addData("hinge power", lift.hinge.getPower());
             telemetry.update();
             lastmillis = runtime.milliseconds();
         }

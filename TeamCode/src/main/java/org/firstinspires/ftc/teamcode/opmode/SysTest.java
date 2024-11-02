@@ -60,7 +60,7 @@ public class SysTest extends LinearOpMode {
         waitForStart();
         runtime.reset();
         double lastmillis = runtime.milliseconds();
-        lift.smoothing = (Integer x) -> {return Double.valueOf(Math.abs(6 * x));};
+        lift.powermul = 0.5;
 
         lift.setPosition(200);
 
@@ -74,10 +74,10 @@ public class SysTest extends LinearOpMode {
 
             drive.setPower(lateral, axial, yaw);
 
-            highBasket.update(gamepad2.dpad_up);
+            highBasket.update(gamepad2.dpad_right);
 
             if(highBasket.pressed())
-                lift.setPosition(750);
+                lift.setPosition(300);
             else if(highBasket.released()){
                 lift.setPosition(0);
             }
