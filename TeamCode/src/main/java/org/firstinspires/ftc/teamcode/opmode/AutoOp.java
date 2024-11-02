@@ -12,9 +12,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Disabled
 @Autonomous(name="auto", group="opmode")
 public class AutoOp extends LinearOpMode {
+
     private AprilTagProcessor aprilTag;
 
     private VisionPortal visionPortal;
@@ -34,9 +34,9 @@ public class AutoOp extends LinearOpMode {
 ////        (probably separate if/then statements for each variable to differentiate which ones busted)
 ////        (also maybe do the same thing if the reported x or y value is one that would position it outside of the arena? Or if 0 < rotation < 360)
 ////
-        initAprilTag();
+        //initAprilTag();
         while (opModeIsActive()) {
-            telemetryAprilTag();
+            /*telemetryAprilTag();
 
             // Push telemetry to the Driver Station.
             telemetry.update();

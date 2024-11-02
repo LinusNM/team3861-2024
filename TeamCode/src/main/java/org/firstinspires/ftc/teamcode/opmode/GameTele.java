@@ -55,6 +55,9 @@ public class GameTele extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        claw.xServo.setPosition(0);
+        claw.yServo.setPower(1);
+        claw.clawServo.setPosition(1);
         runtime.reset();
         double lastmillis = runtime.milliseconds();
 

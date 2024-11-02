@@ -13,7 +13,7 @@ public class MecanumDrive {
     public static final Vector4 right = new Vector4(1, -1, -1, 1);
     public static final Vector4 clockwise = new Vector4(1, -1, 1, -1);
 
-    public double powerMultiplier = 0.75;//0.5;
+    public double powerMultiplier = 0.5;//0.5;
 
     public MecanumDrive() {
         motors = new DcMotor[4];

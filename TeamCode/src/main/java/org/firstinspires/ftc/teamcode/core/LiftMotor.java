@@ -54,6 +54,7 @@ public class LiftMotor {
 
     public void update() {
         int posdiff = targetPos - motor.getCurrentPosition();
+        t.reset();
         if(Math.abs(posdiff) <= 75) {
             motor.setTargetPosition(targetPos);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -70,7 +71,6 @@ public class LiftMotor {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         prevpower = Math.max(Math.min(prevpower + power, 1.0), -1.0);
         motor.setPower(prevpower * powermul);
-        t.reset();
         foo = targetVel; // console out
     }
 

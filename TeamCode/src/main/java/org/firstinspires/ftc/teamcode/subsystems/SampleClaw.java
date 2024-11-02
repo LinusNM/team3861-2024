@@ -9,7 +9,7 @@ public class SampleClaw {
         CHAMBER(0,0),
         FWD_COLLECT(1,1),
         REAR_COLLECT(0,0),
-        DOWN(0,yCenter),
+        DOWN(1,yCenter),
         BASKET(0,0);
 
         public double x;
@@ -21,9 +21,9 @@ public class SampleClaw {
         };
     }
 
-    Servo xServo;
-    CRServo yServo;
-    Servo clawServo;
+    public Servo xServo;
+    public CRServo yServo;
+    public Servo clawServo;
 
     public SampleClaw(Servo x, CRServo y, Servo z) {
         xServo = x;

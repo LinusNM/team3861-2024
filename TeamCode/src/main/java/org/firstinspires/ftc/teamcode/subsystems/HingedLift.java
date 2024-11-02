@@ -18,9 +18,9 @@ public class HingedLift {
     public enum Position {
         DOWN(0, 0, RunPriority.LIFT, ClawPosition.DOWN),
         HIGH_BASKET(1000, 800, RunPriority.HINGE, ClawPosition.BASKET),
-        LOW_CHAMBER(400, 750, RunPriority.HINGE, ClawPosition.CHAMBER),
+        LOW_CHAMBER(500, 750, RunPriority.HINGE, ClawPosition.CHAMBER),
         HIGH_CHAMBER(800, 750, RunPriority.HINGE, ClawPosition.CHAMBER),
-        LOW_BASKET(500, 800, RunPriority.HINGE, ClawPosition.BASKET),
+        LOW_BASKET(600, 800, RunPriority.HINGE, ClawPosition.BASKET),
         HANG(700, 750, RunPriority.HINGE, ClawPosition.DOWN),
         FWD_COLLECT(300, 0, RunPriority.BOTH, ClawPosition.FWD_COLLECT),
         REAR_COLLECT(0, 1300, RunPriority.BOTH, ClawPosition.REAR_COLLECT),
@@ -59,7 +59,7 @@ public class HingedLift {
         positions = HardwareConstants.liftPositions;
         //lift.setDirection(DcMotorSimple.Direction.REVERSE);
         lift.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.lift.smoothing = (Integer x) -> {return Double.valueOf(Math.abs(x));};
+        this.lift.smoothing = (Integer x) -> {return Double.valueOf(x);};
     }
 
     public HingedLift(DcMotor hinge, DcMotor lift, SampleClaw claw){
