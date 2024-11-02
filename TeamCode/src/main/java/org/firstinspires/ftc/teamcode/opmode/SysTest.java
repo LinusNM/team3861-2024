@@ -60,6 +60,7 @@ public class SysTest extends LinearOpMode {
         waitForStart();
         runtime.reset();
         double lastmillis = runtime.milliseconds();
+        lift.smoothing = (Integer x) -> {return Double.valueOf(Math.abs(6 * x));};
 
         lift.setPosition(200);
 

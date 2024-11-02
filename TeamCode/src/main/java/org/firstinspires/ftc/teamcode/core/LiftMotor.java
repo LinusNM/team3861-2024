@@ -16,7 +16,7 @@ public class LiftMotor {
     private int maxvel;
     private double speed;
     private double smoothPowerMultiplier = 0.00001;
-    private Function<Integer, Double> smoothing;
+    public Function<Integer, Double> smoothing;
     private boolean busy = false;
     private double prevpower = 0;
     public int min;

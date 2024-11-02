@@ -47,6 +47,7 @@ public class GameTele extends LinearOpMode {
         lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
                 hardwareMap.get(DcMotor.class, "lift"),
                 claw);
+        lift.lift.smoothing = (Integer x) -> {return Double.valueOf(Math.abs(5 * x));};
 
         drive.setDirection(HardwareConstants.driveDirs);
 
@@ -60,7 +61,7 @@ public class GameTele extends LinearOpMode {
 
         lift.setPosition(Position.DOWN);
 
-        lift.lift.setSpeed(2);
+        //lift.lift.setSpeed(2);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -100,7 +101,7 @@ public class GameTele extends LinearOpMode {
                 lift.hinge.setSpeed(1);
             }
             else{
-                lift.lift.setSpeed(2);
+                lift.lift.setSpeed(1);
                 lift.lift.setSpeed(1);
                 lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
             }
