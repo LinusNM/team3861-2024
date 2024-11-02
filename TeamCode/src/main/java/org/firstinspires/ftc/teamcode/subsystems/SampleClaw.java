@@ -29,9 +29,6 @@ public class SampleClaw {
         xServo = x;
         yServo = y;
         clawServo = z;
-
-        setPosition(ClawPosition.DOWN);
-        setClosed(true);
     }
 
     public void setPosition(ClawPosition pos) {
