@@ -45,8 +45,8 @@ public class GameTele extends LinearOpMode {
         
         claw = new SampleClaw(hardwareMap.get(Servo.class, "clawXservo"), hardwareMap.crservo.get("clawYservo"), hardwareMap.get(Servo.class, "clawZservo"));
         lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
-                hardwareMap.get(DcMotor.class, "lift"),
-                claw);
+                hardwareMap.get(DcMotor.class, "lift")/*,
+                claw*/);
 
         drive.setDirection(HardwareConstants.driveDirs);
 
@@ -55,9 +55,6 @@ public class GameTele extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        claw.xServo.setPosition(0);
-        claw.yServo.setPower(1);
-        claw.clawServo.setPosition(1);
         runtime.reset();
         double lastmillis = runtime.milliseconds();
 
@@ -90,7 +87,11 @@ public class GameTele extends LinearOpMode {
             }
             validateLiftPos();
 
-            if(gamepad2.right_bumper) { // manual lift control
+            claw.clawServo.setPosition(gamepad2.left_bumper ? 1 : 0);
+            claw.xServo.setPosition(gamepad2.right_stick_x);
+            claw.yServo.setPower(gamepad2.right_stick_y + 0.367);
+
+            if(/*gamepad2.right_bumper*/false) { // manual lift control
                 lift.setPosition(Position.FREE);
                 float x = gamepad2.left_stick_x;
                 float y = gamepad2.left_stick_y;
