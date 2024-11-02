@@ -45,6 +45,8 @@ public class HingedLift {
             clawpos = ClawPosition.DOWN;
         }
     }
+
+    private SampleClaw claw;
     private Position currentPos;
 
     public LiftMotor hinge, lift;
@@ -56,9 +58,16 @@ public class HingedLift {
         positions = HardwareConstants.liftPositions;
     }
 
+    public HingedLift(DcMotor hinge, DcMotor lift, SampleClaw claw){
+        this(hinge, lift);
+        this.claw = claw;
+        claw.setPosition(ClawPosition.DOWN);
+    }
+
     public void setPosition(Position position) {
-        int foo = 0;
         currentPos = position;
+        if(claw != null)
+            claw.setPosition(currentPos.clawpos);
         if (position == Position.FREE) { // all exception positions here
             hinge.setPosition(hinge.getPosition());
             lift.setPosition(lift.getPosition());
@@ -66,6 +75,7 @@ public class HingedLift {
         }
         hinge.setPosition(position.hingepos);
         lift.setPosition(position.liftpos);
+
     }
 
     public Position getCurrentPos() {
@@ -87,5 +97,9 @@ public class HingedLift {
             if(!hinge.isBusy())
                 lift.update();
         }
+    }
+
+    public boolean isBusy() {
+        return (lift.isBusy() || hinge.isBusy());
     }
 }

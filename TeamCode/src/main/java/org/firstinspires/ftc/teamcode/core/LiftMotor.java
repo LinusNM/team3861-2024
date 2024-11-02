@@ -15,9 +15,10 @@ public class LiftMotor {
     private int targetPos;
     private int maxvel;
     private double speed;
-    private double smoothPowerMultiplier = 0.01;
+    private double smoothPowerMultiplier = 0.00001;
     private Function<Integer, Double> smoothing;
     private boolean busy = false;
+    private double prevpower = 0;
     public int min;
     public int max;
     public double foo = 0;
@@ -32,7 +33,8 @@ public class LiftMotor {
         motor.setDirection(DcMotor.Direction.FORWARD);
         encoder = new Encoder((DcMotorEx)motor);
         smoothing = (Integer i) -> {
-            return new Double(-Math.min(0.005 * (double)i * i, maxvel) * ((i > 0) ? -1 : 1));
+            //return new Double(-Math.min(0.005 * (double)i * i, maxvel) * ((i > 0) ? -1 : 1));
+            return Double.valueOf(-Math.min(0.005 * (double)i * i, maxvel) * ((i > 0) ? -1 : 1));
         };
         t.reset();
     }
@@ -51,7 +53,7 @@ public class LiftMotor {
 
     public void update() {
         int posdiff = targetPos - motor.getCurrentPosition();
-        if(Math.abs(posdiff) <= 20) {
+        if(Math.abs(posdiff) <= 75) {
             motor.setTargetPosition(targetPos);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor.setPower(1);
@@ -64,11 +66,11 @@ public class LiftMotor {
         double targetVel = smoothing.apply(posdiff);
 
         double power = (targetVel - vel) * smoothPowerMultiplier * t.milliseconds();
-        t.reset();
-        //motor.setTargetPosition(motor.getCurrentPosition() + ((posdiff > 0) ? 30 : -30));
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor.setPower(Math.min(motor.getPower() + power, 100d));
-        foo = targetVel;
+        prevpower = Math.max(Math.min(prevpower + power, 1.0), -1.0);
+        motor.setPower(prevpower);
+        t.reset();
+        foo = targetVel; // console out
     }
 
     public void setPosition(int pos) {

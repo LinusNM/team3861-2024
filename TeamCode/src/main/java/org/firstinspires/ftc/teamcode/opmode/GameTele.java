@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.apache.commons.math3.util.MathArrays;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.core.*;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift.Position;
+import org.firstinspires.ftc.teamcode.subsystems.SampleClaw;
 
 @TeleOp(name="TeleOp", group="Linear Opmode")
 //@Disabled
@@ -19,6 +21,7 @@ public class GameTele extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrive drive;
     private HingedLift lift;
+    private SampleClaw claw;
 
     Button up = new Button();
     Button fwd = new Button();
@@ -26,9 +29,9 @@ public class GameTele extends LinearOpMode {
     Button dn = new Button();
 
     boolean liftfwd = true;
-    int liftIndex = 0;
+    int liftIndex = 1;
 
-    public static Position[] fwd_positions = {Position.DOWN, Position.LOW_CHAMBER, Position.HIGH_CHAMBER};
+    public static Position[] fwd_positions = {Position.FWD_COLLECT, Position.DOWN, Position.LOW_CHAMBER, Position.HIGH_CHAMBER};
     public static Position[] back_positions = {Position.REAR_COLLECT, Position.LOW_BASKET, Position.HIGH_BASKET};
 
     @Override
@@ -39,9 +42,11 @@ public class GameTele extends LinearOpMode {
                 hardwareMap.get(DcMotor.class, "leftRear"),
         hardwareMap.get(DcMotor.class, "rightRear")
         );
-
+        
+        claw = new SampleClaw(hardwareMap.get(Servo.class, "clawXservo"), hardwareMap.crservo.get("clawYservo"), hardwareMap.get(Servo.class, "clawZservo"));
         lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
-                hardwareMap.get(DcMotor.class, "lift"));
+                hardwareMap.get(DcMotor.class, "lift"),
+                claw);
 
         drive.setDirection(HardwareConstants.driveDirs);
 
@@ -54,6 +59,8 @@ public class GameTele extends LinearOpMode {
         double lastmillis = runtime.milliseconds();
 
         lift.setPosition(Position.DOWN);
+
+        lift.lift.setSpeed(2);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -72,11 +79,12 @@ public class GameTele extends LinearOpMode {
             else if(back.pressed())
                 liftfwd = false;
             if(up.pressed()) {
-                liftIndex = Math.min(liftIndex + 1, back_positions.length - 1);
+                liftIndex = liftIndex + 1;
             }
             if(dn.pressed()) {
-                liftIndex = Math.max(liftIndex - 1, 0);
+                liftIndex = liftIndex - 1;
             }
+            validateLiftPos();
 
             if(gamepad2.right_bumper) { // manual lift control
                 lift.setPosition(Position.FREE);
@@ -92,12 +100,14 @@ public class GameTele extends LinearOpMode {
                 lift.hinge.setSpeed(1);
             }
             else{
+                lift.lift.setSpeed(2);
+                lift.lift.setSpeed(1);
                 lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
             }
             lift.update();
 
             telemetry.addData("hinge pos", lift.hinge.getPosition());
-            telemetry.addData("hinge target vel", lift.hinge.foo);
+            telemetry.addData("hinge actual power", lift.hinge.foo);
             telemetry.addData("hinge vel", lift.hinge.getVel());
             telemetry.addData("hinge target", lift.hinge.getTarget());
             telemetry.addData("lift pos", lift.lift.getPosition());
@@ -106,5 +116,10 @@ public class GameTele extends LinearOpMode {
             telemetry.update();
             lastmillis = runtime.milliseconds();
         }
+    }
+
+    private void validateLiftPos() {
+        liftIndex = Math.min(liftIndex, liftfwd ? fwd_positions.length - 1 : back_positions.length - 1);
+        liftIndex = Math.max(liftIndex, 0);
     }
 }

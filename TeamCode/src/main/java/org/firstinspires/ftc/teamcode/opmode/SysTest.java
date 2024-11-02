@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.apache.commons.math3.util.MathArrays;
@@ -11,28 +12,40 @@ import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.core.*;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift.Position;
+import org.firstinspires.ftc.teamcode.subsystems.SampleClaw;
+import org.firstinspires.ftc.teamcode.subsystems.SampleClaw.*;
 
 @TeleOp(name="tele systems test", group="Linear Opmode")
 //@Disabled
 public class SysTest extends LinearOpMode {
 
+
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrive drive;
+    private SampleClaw claw;
     private HingedLift lift;
+
+    public static final ClawPosition[] pos = {ClawPosition.BASKET, ClawPosition.CHAMBER, ClawPosition.DOWN, ClawPosition.FWD_COLLECT, ClawPosition.REAR_COLLECT};
 
     @Override
     public void runOpMode() {
-        drive = new FastMecanum(
+        claw = new SampleClaw(hardwareMap.get(Servo.class, "clawXservo"), hardwareMap.crservo.get("clawYservo"), hardwareMap.get(Servo.class, "clawZservo"));
+        drive = new MecanumDrive(
                 hardwareMap.get(DcMotor.class, "leftFront"),
                 hardwareMap.get(DcMotor.class, "rightFront"),
                 hardwareMap.get(DcMotor.class, "leftRear"),
                 hardwareMap.get(DcMotor.class, "rightRear")
         );
 
+        int current = 0;
+
+        Button up = new Button();
+        Button dn = new Button();
+
         /*lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
                 hardwareMap.get(DcMotor.class, "lift"));*/
-        LiftMotor lift = new LiftMotor(hardwareMap.get(DcMotor.class, "lift"));
-        LiftMotor hinge = new LiftMotor(hardwareMap.get(DcMotor.class, "hinge"));
+        LiftMotor lift = new LiftMotor(hardwareMap.get(DcMotor.class, "lift"), 0, 1000);
+        LiftMotor hinge = new LiftMotor(hardwareMap.get(DcMotor.class, "hinge"), 0, 1000);
 
         //drive.dampenRoll = false;
         Button dampenRoll = new Button();
@@ -48,6 +61,8 @@ public class SysTest extends LinearOpMode {
         runtime.reset();
         double lastmillis = runtime.milliseconds();
 
+        lift.setPosition(200);
+
         //lift.setPosition(Position.DOWN);
 
         // run until the end of the match (driver presses STOP)
@@ -61,11 +76,22 @@ public class SysTest extends LinearOpMode {
             highBasket.update(gamepad2.dpad_up);
 
             if(highBasket.pressed())
-                hinge.setPosition(750);
+                lift.setPosition(750);
             else if(highBasket.released()){
-                hinge.setPosition(10);
+                lift.setPosition(0);
             }
-            hinge.update();
+            lift.update();
+
+            up.update(gamepad2.dpad_up);
+            dn.update(gamepad2.dpad_down);
+
+            if(up.pressed())
+                current = Math.min(current + 1, pos.length - 1);
+            if(dn.pressed())
+                current = Math.max(current - 1, 0);
+
+            claw.setPosition(pos[current]);
+            claw.setClosed(gamepad2.right_bumper);
 
             /*telemetry.addData("Roll Dampening", drive.dampenRoll ? "on" : "off");
             telemetry.addData("hinge pos", lift.hinge.getPosition());
@@ -82,11 +108,11 @@ public class SysTest extends LinearOpMode {
 
 
 
-            telemetry.addData("hinge pos", hinge.getPosition());
             telemetry.addData("lift pos", lift.getPosition());
-            telemetry.addData("hinge target vel", hinge.foo);
-            telemetry.addData("hinge target", hinge.getTarget());
-            telemetry.addData("b", gamepad2.dpad_up);
+            telemetry.addData("lift vel", lift.getVel());
+            telemetry.addData("lift target vel", lift.foo);
+            telemetry.addData("lift target", lift.getTarget());
+            telemetry.addData("b", highBasket.pressed());
             telemetry.update();
             lastmillis = runtime.milliseconds();
         }
