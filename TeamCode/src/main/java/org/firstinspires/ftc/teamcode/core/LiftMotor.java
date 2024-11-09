@@ -67,11 +67,11 @@ public class LiftMotor {
         double vel = encoder.getCorrectedVelocity();
         double targetVel = smoothing.apply(posdiff);
 
-        double power = (targetVel - vel) * smoothPowerMultiplier * t.milliseconds();
+        double power = ((targetVel - vel) * smoothPowerMultiplier) * t.milliseconds();
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         prevpower = Math.max(Math.min(prevpower + power, 1.0), -1.0);
-        motor.setPower(prevpower * powermul);
-        foo = targetVel; // console out
+        motor.setPower(prevpower/* * powermul*/);
+        foo = Math.max(Math.min(prevpower + power, 1.0), -1.0); // console out
     }
 
     public void setPosition(int pos) {

@@ -45,7 +45,8 @@ public class SysTest extends LinearOpMode {
         /*lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
                 hardwareMap.get(DcMotor.class, "lift"));*/
         LiftMotor lift = new LiftMotor(hardwareMap.get(DcMotor.class, "lift"), 0, 1000);
-        LiftMotor hinge = new LiftMotor(hardwareMap.get(DcMotor.class, "hinge"), 0, 1000);
+        //LiftMotor hinge = new LiftMotor(hardwareMap.get(DcMotor.class, "hinge"), 0, 1000);
+        DcMotor hinge = hardwareMap.get(DcMotor.class, "hinge");
 
         //drive.dampenRoll = false;
         Button dampenRoll = new Button();
@@ -107,13 +108,14 @@ public class SysTest extends LinearOpMode {
             hinge.setPower(hpow > 0.25 ? hpow : 0);
             lift.setPower(lpow > 0.25 ? lpow : 0);*/
 
-
+            hinge.setPower(gamepad2.left_stick_y);
 
             telemetry.addData("lift pos", lift.getPosition());
             telemetry.addData("lift vel", lift.getVel());
             telemetry.addData("lift target vel", lift.foo);
             telemetry.addData("lift target", lift.getTarget());
-            telemetry.addData("b", highBasket.pressed());
+
+            telemetry.addData("b", gamepad2.left_stick_y);
             telemetry.update();
             lastmillis = runtime.milliseconds();
         }

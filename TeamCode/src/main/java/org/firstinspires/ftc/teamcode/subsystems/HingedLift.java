@@ -59,6 +59,7 @@ public class HingedLift {
         positions = HardwareConstants.liftPositions;
         //lift.setDirection(DcMotorSimple.Direction.REVERSE);
         lift.setDirection(DcMotorSimple.Direction.FORWARD);
+        hinge.setDirection(DcMotorSimple.Direction.FORWARD);
         this.lift.smoothing = (Integer x) -> {return Double.valueOf(x);};
     }
 

@@ -59,7 +59,7 @@ public class GameTele extends LinearOpMode {
         double lastmillis = runtime.milliseconds();
 
         lift.setPosition(Position.DOWN);
-        lift.lift.powermul = 0.75;
+        lift.lift.powermul = 1;
 
         //lift.lift.setSpeed(2);
 
@@ -108,13 +108,11 @@ public class GameTele extends LinearOpMode {
             lift.update();
 
             telemetry.addData("lift pos", lift.lift.getPosition());
-            telemetry.addData("lift tvel", lift.lift.foo);
             telemetry.addData("lift vel", lift.lift.getVel());
             telemetry.addData("lift target", lift.lift.getTarget());
             telemetry.addData("lift pos", lift.lift.getPosition());
             telemetry.addData("lift current pos", lift.getCurrentPos());
-            telemetry.addData("hinge pos", lift.hinge.getPosition());
-            telemetry.addData("hinge tvel", lift.hinge.foo);
+            telemetry.addData("hinge power", lift.hinge.foo);
             telemetry.addData("hinge vel", lift.hinge.getVel());
             telemetry.addData("hinge target", lift.hinge.getTarget());
             telemetry.addData("hinge pos", lift.hinge.getPosition());
