@@ -26,7 +26,7 @@ public class LiftMotor {
     private ElapsedTime t = new ElapsedTime();
 
     public LiftMotor(DcMotor motor) {
-        maxvel = 800;
+        maxvel = 200;
         speed = 1;
         this.motor = motor;
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

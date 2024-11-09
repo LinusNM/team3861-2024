@@ -78,7 +78,7 @@ public class HingedLift {
             lift.setPosition(lift.getPosition());
             return;
         }
-        hinge.setPosition(position.hingepos);
+        hinge.setPosition(position.hingepos/2);
         lift.setPosition(position.liftpos);
 
     }
