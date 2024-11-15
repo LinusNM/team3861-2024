@@ -110,10 +110,7 @@ public class SysTest extends LinearOpMode {
 
             hinge.setPower(gamepad2.left_stick_y);
 
-            telemetry.addData("lift pos", lift.getPosition());
-            telemetry.addData("lift vel", lift.getVel());
-            telemetry.addData("lift target vel", lift.foo);
-            telemetry.addData("lift target", lift.getTarget());
+            telemetry.addData("lift pos", hinge.getCurrentPosition());
 
             telemetry.addData("b", gamepad2.left_stick_y);
             telemetry.update();

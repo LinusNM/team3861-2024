@@ -20,7 +20,7 @@ public class GameTele extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrive drive;
-    private HingedLift lift;
+    //private HingedLift lift;
     private SampleClaw claw;
 
     Button up = new Button();
@@ -30,9 +30,14 @@ public class GameTele extends LinearOpMode {
 
     boolean liftfwd = true;
     int liftIndex = 1;
-
+    /*
     public static Position[] fwd_positions = {Position.FWD_COLLECT, Position.DOWN, Position.LOW_CHAMBER, Position.HIGH_CHAMBER};
-    public static Position[] back_positions = {Position.REAR_COLLECT, Position.LOW_BASKET, Position.HIGH_BASKET};
+    public static Position[] back_positions = {Position.REAR_COLLECT, Position.LOW_BASKET, Position.HIGH_BASKET};*/
+
+
+    public static int[] liftPos;
+    public static SampleClaw.ClawPosition clawPos[];
+    LiftMotor lift;
 
     @Override
     public void runOpMode() {
@@ -42,10 +47,11 @@ public class GameTele extends LinearOpMode {
                 hardwareMap.get(DcMotor.class, "leftRear"),
         hardwareMap.get(DcMotor.class, "rightRear")
         );
-        
+
+        lift = new LiftMotor(hardwareMap.get(DcMotor.class, "hinge"));
         claw = new SampleClaw(hardwareMap.get(Servo.class, "clawXservo"), hardwareMap.crservo.get("clawYservo"), hardwareMap.get(Servo.class, "clawZservo"));
-        lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
-                hardwareMap.get(DcMotor.class, "lift"), claw);
+        /*lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
+                hardwareMap.get(DcMotor.class, "lift"), claw);*/
 
         drive.setDirection(HardwareConstants.driveDirs);
 
@@ -57,8 +63,8 @@ public class GameTele extends LinearOpMode {
         runtime.reset();
         double lastmillis = runtime.milliseconds();
 
-        lift.setPosition(Position.DOWN);
-        lift.lift.powermul = 1;
+        lift.setPosition(0);
+        lift.powermul = 1;
 
         //lift.lift.setSpeed(2);
 
@@ -74,7 +80,16 @@ public class GameTele extends LinearOpMode {
             back.update(gamepad2.dpad_left);
             up.update(gamepad2.dpad_up);
             dn.update(gamepad2.dpad_down);
-            if(fwd.pressed())
+
+            if(up.pressed()) {
+                liftIndex = Math.min(liftPos.length, ++liftIndex);
+            }
+            if(dn.pressed()){
+                liftIndex = Math.max(0, --liftIndex);
+            }
+            lift.setPosition(liftPos[liftIndex]);
+            claw.setPosition(clawPos[liftIndex]);
+            /*if(fwd.pressed())
                 liftfwd = true;
             else if(back.pressed())
                 liftfwd = false;
@@ -94,8 +109,8 @@ public class GameTele extends LinearOpMode {
                 }
             }
 
-            if(/*gamepad2.right_bumper*/false) { // manual lift control
-                lift.setPosition(Position.FREE);
+            if(false) { // manual lift control
+                //lift.setPosition(Position.FREE);
                 float x = gamepad2.left_stick_x;
                 float y = gamepad2.left_stick_y;
                 if(Math.abs(y) >= 0.5) {
@@ -107,10 +122,10 @@ public class GameTele extends LinearOpMode {
             }
             else{
                 lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
-            }
+            }*/
             lift.update();
 
-            telemetry.addData("lift pos", lift.lift.getPosition());
+            /*telemetry.addData("lift pos", lift.lift.getPosition());
             telemetry.addData("lift vel", lift.lift.getVel());
             telemetry.addData("lift target", lift.lift.getTarget());
             telemetry.addData("lift pos", lift.lift.getPosition());
@@ -118,14 +133,14 @@ public class GameTele extends LinearOpMode {
             telemetry.addData("hinge power", lift.hinge.foo);
             telemetry.addData("hinge vel", lift.hinge.getVel());
             telemetry.addData("hinge target", lift.hinge.getTarget());
-            telemetry.addData("hinge pos", lift.hinge.getPosition());
+            telemetry.addData("hinge pos", lift.hinge.getPosition());*/
             telemetry.update();
             lastmillis = runtime.milliseconds();
         }
     }
 
-    private void validateLiftPos() {
+    /*private void validateLiftPos() {
         liftIndex = Math.min(liftIndex, liftfwd ? fwd_positions.length - 1 : back_positions.length - 1);
         liftIndex = Math.max(liftIndex, 0);
-    }
+    }*/
 }
