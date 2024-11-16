@@ -126,7 +126,9 @@ public class GameTele extends LinearOpMode {
                 lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
             }*/
 
-            lift.setPosition((int)(lift.getPosition() + gamepad2.left_stick_y * 2 * (runtime.milliseconds() - lastmillis)));
+            if(Math.abs(gamepad2.left_stick_y) >= 0.2) {
+                lift.setPosition((int) (lift.getPosition() + gamepad2.left_stick_y * 8 * (runtime.milliseconds() - lastmillis)));
+            }
             lift.update();
 
             /*telemetry.addData("lift pos", lift.lift.getPosition());

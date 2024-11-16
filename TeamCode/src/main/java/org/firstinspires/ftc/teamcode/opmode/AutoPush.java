@@ -67,10 +67,9 @@ public class AutoPush extends LinearOpMode {
         drive.setDirection(HardwareConstants.driveDirs);
 
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 3.0)) {
-            drive.setPowerRaw(MecanumDrive.forward.mul(0.2));
+        while (opModeIsActive() && (runtime.seconds() < 5.0)) {
+            drive.setPowerRaw(MecanumDrive.forward.mul(0.15));
         }
-
 
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.2)) {
