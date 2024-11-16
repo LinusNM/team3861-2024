@@ -41,6 +41,8 @@ public class GameTele extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        lift.setSpeed(2);
+
         drive = new MecanumDrive(
         hardwareMap.get(DcMotor.class, "leftFront"),
         hardwareMap.get(DcMotor.class, "rightFront"),
@@ -81,7 +83,7 @@ public class GameTele extends LinearOpMode {
             up.update(gamepad2.dpad_up);
             dn.update(gamepad2.dpad_down);
 
-            if(up.pressed()) {
+            /*if(up.pressed()) {
                 liftIndex = Math.min(liftPos.length, ++liftIndex);
             }
             if(dn.pressed()){
@@ -123,6 +125,8 @@ public class GameTele extends LinearOpMode {
             else{
                 lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
             }*/
+
+            lift.setPosition((int)(lift.getPosition() + gamepad2.left_stick_y * 2 * (runtime.milliseconds() - lastmillis)));
             lift.update();
 
             /*telemetry.addData("lift pos", lift.lift.getPosition());
