@@ -10,19 +10,20 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Autonomous(name="auto", group="opmode")
 public class AutoOp extends LinearOpMode {
 
     private AprilTagProcessor aprilTag;
-
     private VisionPortal visionPortal;
 
     public float xLocation;
     public float yLocation;
     public float rotation;
-
 
 
     public void runOpMode() {
@@ -34,24 +35,49 @@ public class AutoOp extends LinearOpMode {
 ////        (probably separate if/then statements for each variable to differentiate which ones busted)
 ////        (also maybe do the same thing if the reported x or y value is one that would position it outside of the arena? Or if 0 < rotation < 360)
 ////
-        //initAprilTag();
+        initAprilTag();
+
+        // Current position is origin
+        xLocation = 0;
+        yLocation = 0;
+        rotation = 0;
+
+        // Wait for the game to start (driver presses START)
+        waitForStart();
+
         while (opModeIsActive()) {
-            /*telemetryAprilTag();
+            // Check for detected april tags and update the aprilTagLocations map
+            // with any found
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+            // TODO: only keep vision portal streaming on sometimes to save CPU resources?
+            // visionPortal.stopStreaming();
+            // visionPortal.resumeStreaming();
+
+            // for every seen april tag
+            //    update location
+            for (AprilTagDetection detection : currentDetections) {
+                //TODO: translate from this to actual robot position
+                if (detection.metadata != null) {
+                    telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                    telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                } else {
+                    telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                    telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+                }
+            }
+
+            // Add "key" information to telemetry
+            telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
+            telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+            telemetry.addLine("RBE = Range, Bearing & Elevation");
 
             // Push telemetry to the Driver Station.
             telemetry.update();
 
-            // Save CPU resources; can resume streaming when needed.
-            if (gamepad1.dpad_down) {
-                visionPortal.stopStreaming();
-                telemetry.addLine("dpad down");
-            } else if (gamepad1.dpad_up) {
-                visionPortal.resumeStreaming();
-                telemetry.addLine("dpad up");
-            }
-
-            // if see april tag
-            //    update location
 
 //            Function: probably multiple if/then forever loops that define the x/y coord range and domain
 //        of different areas of the arena?
@@ -61,51 +87,20 @@ public class AutoOp extends LinearOpMode {
     x = whatever
     y= whatever
     rotation = 0? i guess?
-
-
-
- *
  */
         }
 
 
     }
     private void initAprilTag() {
-
         // Create the AprilTag processor the easy way.
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
 
         // Create the vision portal the easy way.
-
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                    hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
-
-
-
+        visionPortal = VisionPortal.easyCreateWithDefaults(
+            hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
     }
-    private void telemetryAprilTag() {
 
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
-
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
-    }
 }
 
 
