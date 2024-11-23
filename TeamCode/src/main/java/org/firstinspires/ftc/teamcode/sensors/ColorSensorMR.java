@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: MR Color", group = "Sensor")
-//@Disabled
+
 public class ColorSensorMR extends LinearOpMode {
 
   static ColorSensor colorSensor;    // Hardware Device Object

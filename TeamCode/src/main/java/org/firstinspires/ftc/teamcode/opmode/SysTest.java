@@ -59,6 +59,8 @@ public class SysTest extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        claw.setPosition(ClawPosition.DOWN);
+        claw.setClosed(true);
         runtime.reset();
         double lastmillis = runtime.milliseconds();
         lift.powermul = 0.5;

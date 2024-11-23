@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SampleClaw;
 @TeleOp(name="TeleOp", group="Linear Opmode")
 //@Disabled
 public class GameTele extends LinearOpMode {
-
+    private ElapsedTime hang = new ElapsedTime();
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrive drive;
     //private HingedLift lift;
@@ -29,19 +29,19 @@ public class GameTele extends LinearOpMode {
     Button dn = new Button();
 
     boolean liftfwd = true;
-    int liftIndex = 1;
+    int liftIndex = 0;
     /*
     public static Position[] fwd_positions = {Position.FWD_COLLECT, Position.DOWN, Position.LOW_CHAMBER, Position.HIGH_CHAMBER};
     public static Position[] back_positions = {Position.REAR_COLLECT, Position.LOW_BASKET, Position.HIGH_BASKET};*/
 
 
-    public static int[] liftPos;
-    public static SampleClaw.ClawPosition clawPos[];
+    public static int[] liftPos = {0, 1000, 1200, 2050};
+    public static SampleClaw.ClawPosition clawPos[] = {SampleClaw.ClawPosition.FWD_COLLECT, SampleClaw.ClawPosition.CHAMBER, SampleClaw.ClawPosition.BASKET, SampleClaw.ClawPosition.REAR_COLLECT};
     LiftMotor lift;
+    DcMotor winch;
 
     @Override
     public void runOpMode() {
-        lift.setSpeed(2);
 
         drive = new MecanumDrive(
         hardwareMap.get(DcMotor.class, "leftFront"),
@@ -50,7 +50,8 @@ public class GameTele extends LinearOpMode {
         hardwareMap.get(DcMotor.class, "rightRear")
         );
 
-        lift = new LiftMotor(hardwareMap.get(DcMotor.class, "hinge"));
+        winch = hardwareMap.get(DcMotor.class, "winch");
+        lift = new LiftMotor(hardwareMap.get(DcMotor.class, "hinge"), 0, 2300);
         claw = new SampleClaw(hardwareMap.get(Servo.class, "clawXservo"), hardwareMap.crservo.get("clawYservo"), hardwareMap.get(Servo.class, "clawZservo"));
         /*lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
                 hardwareMap.get(DcMotor.class, "lift"), claw);*/
@@ -64,17 +65,32 @@ public class GameTele extends LinearOpMode {
         waitForStart();
         runtime.reset();
         double lastmillis = runtime.milliseconds();
+        claw.setPosition(SampleClaw.ClawPosition.DOWN);
 
         lift.setPosition(0);
         lift.powermul = 1;
+        lift.setSpeed(2);
 
         //lift.lift.setSpeed(2);
 
         // run until the end of the match (driver presses STOP)
+
+        double change = 0.001;
+        double xpos = 0.5;
+        double ypos = 0.367;
         while (opModeIsActive()) {
+
+            if(gamepad2.right_bumper){
+                winch.setTargetPosition(400);
+                winch.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+
             double axial   = -gamepad1.left_stick_y;  // pushing stick forward gives negative value
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
+
+            axial = -axial;
+            lateral = -lateral;
 
             drive.setPower(lateral, axial, yaw);
 
@@ -84,7 +100,7 @@ public class GameTele extends LinearOpMode {
             dn.update(gamepad2.dpad_down);
 
             /*if(up.pressed()) {
-                liftIndex = Math.min(liftPos.length, ++liftIndex);
+                liftIndex = Math.min(liftPos.length-1, ++liftIndex);
             }
             if(dn.pressed()){
                 liftIndex = Math.max(0, --liftIndex);
@@ -103,13 +119,31 @@ public class GameTele extends LinearOpMode {
             }
             validateLiftPos();
 
-            if(lift.getCurrentPos() == Position.FWD_COLLECT || lift.getCurrentPos() == Position.REAR_COLLECT) {
-                claw.setClosed(gamepad2.left_bumper);
-                if((Math.abs(gamepad2.right_stick_x) >= 0.2 || Math.abs(gamepad2.right_stick_y) >= 0.2)) {
-                    claw.xServo.setPosition(gamepad2.right_stick_x);
+            if(lift.getCurrentPos() == Position.FWD_COLLECT || lift.getCurrentPos() == Position.REAR_COLLECT) {*/
+            if(/*liftIndex == 0 || liftIndex == 3*/true) {
+                if((Math.abs(gamepad2.right_stick_x) >= 0.8 || Math.abs(gamepad2.right_stick_y) >= 0.8)) {
+                    /*// y servo up - down
+                    if (gamepad2.right_stick_y > 0.1) {
+                        claw.yServo.setPower(1); // Move to one extreme
+                    } else if (gamepad2.right_stick_y < -0.1) {
+                        claw.yServo.setPower(0); // Move to the other extreme
+                    }
+                    else {
+                        claw.yServo.setPower(ypos); // Return to center
+                    }*/
+
+                    claw.xServo.setPosition(claw.xServo.getPosition() + (gamepad2.right_stick_x * (runtime.milliseconds() - lastmillis) * 0.02));
                     claw.yServo.setPower(gamepad2.right_stick_y + 0.367);
                 }
+                else{
+                    claw.yServo.setPower(0.367);
+                }
             }
+
+
+            claw.setClosed(gamepad2.left_bumper);
+           // claw.setPosition(clawPos[liftIndex]);
+            /*
 
             if(false) { // manual lift control
                 //lift.setPosition(Position.FREE);
@@ -126,10 +160,10 @@ public class GameTele extends LinearOpMode {
                 lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
             }*/
 
-            if(Math.abs(gamepad2.left_stick_y) >= 0.2) {
-                lift.setPosition((int) (lift.getPosition() + gamepad2.left_stick_y * 8 * (runtime.milliseconds() - lastmillis)));
-            }
+            lift.setPosition((int)(lift.getPosition() + gamepad2.left_stick_y * (50)));
+            lift.setSpeed(1.5);
             lift.update();
+            claw.setClosed(gamepad2.left_bumper);
 
             /*telemetry.addData("lift pos", lift.lift.getPosition());
             telemetry.addData("lift vel", lift.lift.getVel());
@@ -140,6 +174,9 @@ public class GameTele extends LinearOpMode {
             telemetry.addData("hinge vel", lift.hinge.getVel());
             telemetry.addData("hinge target", lift.hinge.getTarget());
             telemetry.addData("hinge pos", lift.hinge.getPosition());*/
+            telemetry.addData("lift pos", lift.getPosition());
+            telemetry.addData("lift target", lift.getTarget());
+            telemetry.addData("lift index", liftIndex);
             telemetry.update();
             lastmillis = runtime.milliseconds();
         }

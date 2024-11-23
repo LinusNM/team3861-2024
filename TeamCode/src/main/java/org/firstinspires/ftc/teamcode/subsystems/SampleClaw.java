@@ -7,8 +7,8 @@ public class SampleClaw {
     public static final double yCenter = 0.367;
     public enum ClawPosition {
         CHAMBER(0,1),
-        FWD_COLLECT(0.5,yCenter),
-        REAR_COLLECT(0,0),
+        FWD_COLLECT(0,yCenter),
+        REAR_COLLECT(0,yCenter),
         DOWN(1,yCenter),
         BASKET(0,0);
 
