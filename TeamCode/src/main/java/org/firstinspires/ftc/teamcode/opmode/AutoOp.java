@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.core.Vector2;
+import org.firstinspires.ftc.teamcode.core.FieldPosition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -20,6 +22,9 @@ public class AutoOp extends LinearOpMode {
 
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
+
+    // initialize with codes mapped to positions around field
+    public static final HashMap<Integer, FieldPosition> tagPositions = new HashMap<>();
 
     public float xLocation;
     public float yLocation;
@@ -46,6 +51,9 @@ public class AutoOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            VisionPortal.CameraState cameraState = visionPortal.getCameraState();
+            telemetry.addLine(String.format("Camera State: %s", cameraState.toString()));
+
             // Check for detected april tags and update the aprilTagLocations map
             // with any found
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -54,6 +62,7 @@ public class AutoOp extends LinearOpMode {
             // TODO: only keep vision portal streaming on sometimes to save CPU resources?
             // visionPortal.stopStreaming();
             // visionPortal.resumeStreaming();
+
 
             // for every seen april tag
             //    update location
@@ -90,6 +99,8 @@ public class AutoOp extends LinearOpMode {
  */
         }
 
+        // Save more CPU resources when camera is no longer needed.
+        visionPortal.close();
 
     }
     private void initAprilTag() {
@@ -101,6 +112,22 @@ public class AutoOp extends LinearOpMode {
             hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
     }
 
+
+    // offset and angle are of tag relative to camera; idk how SDK gives these values, may need tweaking
+    public FieldPosition calcPos(Vector2 offset, double angle, int tagID) {
+        FieldPosition tagPos = tagPositions.get(Integer.valueOf(tagID));
+        double theta = tagPos.angle + angle;
+        Vector2 globalPos = tagPos.pos.sub(rotate(offset, theta));
+        return new FieldPosition(globalPos, theta);
+    }
+
+    public Vector2 rotate(Vector2 point, double angle) { // CW around origin
+        angle = -angle;
+        return new Vector2(
+                point.x * Math.cos(angle) + point.y * Math.sin(angle),
+                point.y * Math.cos(angle) + point.x * Math.sin(angle)
+        );
+    }
 }
 
 
