@@ -80,9 +80,16 @@ public class GameTele extends LinearOpMode {
         double ypos = 0.367;
         while (opModeIsActive()) {
 
-            if(gamepad2.right_bumper){
-                winch.setTargetPosition(400);
-                winch.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            if(gamepad2.dpad_down) {
+                winch.setPower(1);
+            }
+            if (gamepad2.dpad_up){
+                winch.setPower(-1);
+                //winch.setTargetPosition(400);
+                //winch.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+            else{
+                winch.setPower(0);
             }
 
             double axial   = -gamepad1.left_stick_y;  // pushing stick forward gives negative value
