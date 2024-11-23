@@ -15,7 +15,7 @@ public class LiftMotor {
     private int targetPos;
     private int maxvel;
     private double speed;
-    private double smoothPowerMultiplier = 0.00001;
+    private double smoothPowerMultiplier = 0.000001;
     public Function<Integer, Double> smoothing;
     private boolean busy = false;
     private double prevpower = 0;
@@ -26,7 +26,7 @@ public class LiftMotor {
     private ElapsedTime t = new ElapsedTime();
 
     public LiftMotor(DcMotor motor) {
-        maxvel = 200;
+        maxvel = 600;
         speed = 1;
         this.motor = motor;
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -65,7 +65,7 @@ public class LiftMotor {
 
         busy = true;
         double vel = encoder.getCorrectedVelocity();
-        double targetVel = smoothing.apply(posdiff);
+        double targetVel = smoothing.apply(posdiff) * speed;
 
         double power = ((targetVel - vel) * smoothPowerMultiplier) * t.milliseconds();
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

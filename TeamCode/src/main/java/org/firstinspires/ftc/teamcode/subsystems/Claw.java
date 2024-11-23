@@ -35,7 +35,7 @@ public class Claw extends LinearOpMode {
         myServoZ.setPosition(0.5);
 
         waitForStart();
-        double change = 0.005;
+        double change = 0.001;
         double xpos = 0.5;
         double ypos = 0.367;
 
@@ -60,7 +60,6 @@ public class Claw extends LinearOpMode {
             }
             else {
                 myServoY.setPower(ypos); // Return to center
-
             }
 
             // z servo open - close
