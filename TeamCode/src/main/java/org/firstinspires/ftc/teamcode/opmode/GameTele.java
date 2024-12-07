@@ -72,8 +72,9 @@ public class GameTele extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
 
         double change = 0.001;
-        double xpos = 0.5;
         double ypos = 0.367;
+
+        lift.lift.setPower(0.25);
         while (opModeIsActive()) {
 
             if (gamepad2.dpad_down) {
@@ -109,22 +110,27 @@ public class GameTele extends LinearOpMode {
                 intake.setRunning(-1);
             else
                 intake.setRunning(0.5);
+            back.update(gamepad2.dpad_left);
+            up.update(gamepad2.dpad_up);
+            dn.update(gamepad2.dpad_down);
+
+            double delta = (runtime.milliseconds() - lastmillis);
+
+            if (Math.abs(gamepad2.left_stick_y) > 0.2 || Math.abs(gamepad2.right_trigger - gamepad2.left_trigger) > 0.2)
+                lift.incrementPosition(delta * gamepad2.left_stick_y / 2, (delta * (gamepad2.right_trigger - gamepad2.left_trigger)) / 2); // 500 cps
+
+            lift.update();
+
+            telemetry.addData("lift pos", lift.lift.getCurrentPosition());
+            telemetry.addData("hinge pos", lift.hinge.getCurrentPosition());
+            telemetry.addData("hinge vel", lift.hingeEncoder.getCorrectedVelocity());
+            telemetry.addData("lift target", lift.lift.getTargetPosition());
+            telemetry.addData("hinge target", lift.hingetarget);
+            telemetry.addData("lift inc", delta * (gamepad2.right_trigger - gamepad2.left_trigger) / 2);
+
+            telemetry.update();
+            lastmillis = runtime.milliseconds();
         }
-        double delta = (runtime.milliseconds() - lastmillis);
-
-        if (Math.abs(gamepad2.left_stick_y) > 0.2 || Math.abs(gamepad2.right_trigger - gamepad2.left_trigger) > 0.2)
-            lift.incrementPosition(delta * (gamepad2.right_trigger - gamepad2.left_trigger) / 2, delta * gamepad2.left_stick_y / 2); // 500 cps
-
-        lift.update();
-
-        telemetry.addData("lift pos", lift.lift.getCurrentPosition());
-        telemetry.addData("hinge pos", lift.hinge.getCurrentPosition());
-        telemetry.addData("hinge vel", lift.hingeEncoder.getCorrectedVelocity());
-        telemetry.addData("lift target", lift.lift.getTargetPosition());
-        telemetry.addData("hinge target", lift.hingetarget);
-
-        telemetry.update();
-        lastmillis = runtime.milliseconds();
     }
 }
 
