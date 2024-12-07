@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.core.*;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift.Position;
+import org.firstinspires.ftc.teamcode.subsystems.ManualLift;
 import org.firstinspires.ftc.teamcode.subsystems.SampleClaw;
 
 @TeleOp(name="TeleOp", group="Linear Opmode")
@@ -20,7 +21,8 @@ public class GameTele extends LinearOpMode {
     private ElapsedTime hang = new ElapsedTime();
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrive drive;
-    //private HingedLift lift;
+    private ManualLift lift;
+
     private SampleClaw claw;
 
     Button up = new Button();
@@ -28,33 +30,26 @@ public class GameTele extends LinearOpMode {
     Button back = new Button();
     Button dn = new Button();
 
-    boolean liftfwd = true;
-    int liftIndex = 0;
-    /*
-    public static Position[] fwd_positions = {Position.FWD_COLLECT, Position.DOWN, Position.LOW_CHAMBER, Position.HIGH_CHAMBER};
-    public static Position[] back_positions = {Position.REAR_COLLECT, Position.LOW_BASKET, Position.HIGH_BASKET};*/
-
-
-    public static int[] liftPos = {0, 1000, 1200, 2050};
-    public static SampleClaw.ClawPosition clawPos[] = {SampleClaw.ClawPosition.FWD_COLLECT, SampleClaw.ClawPosition.CHAMBER, SampleClaw.ClawPosition.BASKET, SampleClaw.ClawPosition.REAR_COLLECT};
-    LiftMotor lift;
+    //public static SampleClaw.ClawPosition clawPos[] = {SampleClaw.ClawPosition.FWD_COLLECT, SampleClaw.ClawPosition.CHAMBER, SampleClaw.ClawPosition.BASKET, SampleClaw.ClawPosition.REAR_COLLECT};
     DcMotor winch;
+
 
     @Override
     public void runOpMode() {
 
         drive = new MecanumDrive(
-        hardwareMap.get(DcMotor.class, "leftFront"),
-        hardwareMap.get(DcMotor.class, "rightFront"),
+                hardwareMap.get(DcMotor.class, "leftFront"),
+                hardwareMap.get(DcMotor.class, "rightFront"),
                 hardwareMap.get(DcMotor.class, "leftRear"),
-        hardwareMap.get(DcMotor.class, "rightRear")
+                hardwareMap.get(DcMotor.class, "rightRear")
         );
 
         winch = hardwareMap.get(DcMotor.class, "winch");
-        lift = new LiftMotor(hardwareMap.get(DcMotor.class, "hinge"), 0, 2300);
-        claw = new SampleClaw(hardwareMap.get(Servo.class, "clawXservo"), hardwareMap.crservo.get("clawYservo"), hardwareMap.get(Servo.class, "clawZservo"));
-        /*lift = new HingedLift(hardwareMap.get(DcMotor.class, "hinge"),
-                hardwareMap.get(DcMotor.class, "lift"), claw);*/
+
+        //claw = new SampleClaw(hardwareMap.get(Servo.class, "clawXservo"), hardwareMap.crservo.get("clawYservo"), hardwareMap.get(Servo.class, "clawZservo"));
+
+        lift = new ManualLift(hardwareMap.get(DcMotor.class, "hinge"),
+                hardwareMap.get(DcMotor.class, "lift"));
 
         drive.setDirection(HardwareConstants.driveDirs);
 
@@ -67,12 +62,6 @@ public class GameTele extends LinearOpMode {
         double lastmillis = runtime.milliseconds();
         claw.setPosition(SampleClaw.ClawPosition.DOWN);
 
-        lift.setPosition(0);
-        lift.powermul = 1;
-        lift.setSpeed(2);
-
-        //lift.lift.setSpeed(2);
-
         // run until the end of the match (driver presses STOP)
 
         double change = 0.001;
@@ -80,21 +69,20 @@ public class GameTele extends LinearOpMode {
         double ypos = 0.367;
         while (opModeIsActive()) {
 
-            if(gamepad2.dpad_down) {
+            if (gamepad2.dpad_down) {
                 winch.setPower(1);
             }
-            if (gamepad2.dpad_up){
+            if (gamepad2.dpad_up) {
                 winch.setPower(-1);
                 //winch.setTargetPosition(400);
                 //winch.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-            else{
+            } else {
                 winch.setPower(0);
             }
 
-            double axial   = -gamepad1.left_stick_y;  // pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double axial = -gamepad1.left_stick_y;  // pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw = gamepad1.right_stick_x;
 
             axial = -axial;
             lateral = -lateral;
@@ -105,92 +93,22 @@ public class GameTele extends LinearOpMode {
             back.update(gamepad2.dpad_left);
             up.update(gamepad2.dpad_up);
             dn.update(gamepad2.dpad_down);
-
-            /*if(up.pressed()) {
-                liftIndex = Math.min(liftPos.length-1, ++liftIndex);
-            }
-            if(dn.pressed()){
-                liftIndex = Math.max(0, --liftIndex);
-            }
-            lift.setPosition(liftPos[liftIndex]);
-            claw.setPosition(clawPos[liftIndex]);
-            /*if(fwd.pressed())
-                liftfwd = true;
-            else if(back.pressed())
-                liftfwd = false;
-            if(up.pressed()) {
-                liftIndex = liftIndex + 1;
-            }
-            if(dn.pressed()) {
-                liftIndex = liftIndex - 1;
-            }
-            validateLiftPos();
-
-            if(lift.getCurrentPos() == Position.FWD_COLLECT || lift.getCurrentPos() == Position.REAR_COLLECT) {*/
-            if(/*liftIndex == 0 || liftIndex == 3*/true) {
-                if((Math.abs(gamepad2.right_stick_x) >= 0.8 || Math.abs(gamepad2.right_stick_y) >= 0.8)) {
-                    /*// y servo up - down
-                    if (gamepad2.right_stick_y > 0.1) {
-                        claw.yServo.setPower(1); // Move to one extreme
-                    } else if (gamepad2.right_stick_y < -0.1) {
-                        claw.yServo.setPower(0); // Move to the other extreme
-                    }
-                    else {
-                        claw.yServo.setPower(ypos); // Return to center
-                    }*/
-
-                    claw.xServo.setPosition(claw.xServo.getPosition() + (gamepad2.right_stick_x * (runtime.milliseconds() - lastmillis) * 0.02));
-                    claw.yServo.setPower(gamepad2.right_stick_y + 0.367);
-                }
-                else{
-                    claw.yServo.setPower(0.367);
-                }
-            }
-
-
-            claw.setClosed(gamepad2.left_bumper);
-           // claw.setPosition(clawPos[liftIndex]);
-            /*
-
-            if(false) { // manual lift control
-                //lift.setPosition(Position.FREE);
-                float x = gamepad2.left_stick_x;
-                float y = gamepad2.left_stick_y;
-                if(Math.abs(y) >= 0.5) {
-                    lift.lift.setPosition(lift.lift.getPosition() + (y > 0 ? -60 : 60));
-                }
-                if(Math.abs(x) >= 0.5) {
-                    lift.hinge.setPosition(lift.hinge.getPosition() + (x > 0 ? 60 : -60));
-                }
-            }
-            else{
-                lift.setPosition(liftfwd ? fwd_positions[liftIndex] : back_positions[liftIndex]);
-            }*/
-
-            lift.setPosition((int)(lift.getPosition() + gamepad2.left_stick_y * (50)));
-            lift.setSpeed(1.5);
-            lift.update();
-            claw.setClosed(gamepad2.left_bumper);
-
-            /*telemetry.addData("lift pos", lift.lift.getPosition());
-            telemetry.addData("lift vel", lift.lift.getVel());
-            telemetry.addData("lift target", lift.lift.getTarget());
-            telemetry.addData("lift pos", lift.lift.getPosition());
-            telemetry.addData("lift current pos", lift.getCurrentPos());
-            telemetry.addData("hinge power", lift.hinge.foo);
-            telemetry.addData("hinge vel", lift.hinge.getVel());
-            telemetry.addData("hinge target", lift.hinge.getTarget());
-            telemetry.addData("hinge pos", lift.hinge.getPosition());*/
-            telemetry.addData("lift pos", lift.getPosition());
-            telemetry.addData("lift target", lift.getTarget());
-            telemetry.addData("lift index", liftIndex);
-            telemetry.update();
-            lastmillis = runtime.milliseconds();
         }
-    }
+        double delta = (runtime.milliseconds() - lastmillis);
 
-    /*private void validateLiftPos() {
-        liftIndex = Math.min(liftIndex, liftfwd ? fwd_positions.length - 1 : back_positions.length - 1);
-        liftIndex = Math.max(liftIndex, 0);
-    }*/
+        if (Math.abs(gamepad2.left_stick_y) > 0.2 || Math.abs(gamepad2.right_trigger - gamepad2.left_trigger) > 0.2)
+            lift.incrementPosition(delta * (gamepad2.right_trigger - gamepad2.left_trigger) / 2, delta * gamepad2.left_stick_y / 2); // 500 cps
+
+        lift.update();
+
+        telemetry.addData("lift pos", lift.lift.getCurrentPosition());
+        telemetry.addData("hinge pos", lift.hinge.getCurrentPosition());
+        telemetry.addData("hinge vel", lift.hingeEncoder.getCorrectedVelocity());
+        telemetry.addData("lift target", lift.lift.getTargetPosition());
+        telemetry.addData("hinge target", lift.hingetarget);
+
+        telemetry.update();
+        lastmillis = runtime.milliseconds();
+    }
 }
+

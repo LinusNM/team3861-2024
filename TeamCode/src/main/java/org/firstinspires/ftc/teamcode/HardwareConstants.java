@@ -13,4 +13,6 @@ public class HardwareConstants {
     public static final int[][] liftPositions = {{0, 0}, {750, 500}};
 
     public static final int liftMaxVel = 600;
+
+    public static final int liftmax = 500, hingemax = 500, hingepeak = 250;
 }
