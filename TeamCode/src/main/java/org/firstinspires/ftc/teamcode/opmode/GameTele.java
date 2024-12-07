@@ -3,13 +3,16 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.apache.commons.math3.util.MathArrays;
 import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.core.*;
+import org.firstinspires.ftc.teamcode.subsystems.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift.Position;
 import org.firstinspires.ftc.teamcode.subsystems.ManualLift;
@@ -23,7 +26,7 @@ public class GameTele extends LinearOpMode {
     private MecanumDrive drive;
     private ManualLift lift;
 
-    private SampleClaw claw;
+    private ActiveIntake intake;
 
     Button up = new Button();
     Button fwd = new Button();
@@ -48,6 +51,8 @@ public class GameTele extends LinearOpMode {
 
         //claw = new SampleClaw(hardwareMap.get(Servo.class, "clawXservo"), hardwareMap.crservo.get("clawYservo"), hardwareMap.get(Servo.class, "clawZservo"));
 
+        intake = new ActiveIntake(hardwareMap.get(Servo.class, "clawXServo"), hardwareMap.get(CRServo.class, "clawYServo"));
+
         lift = new ManualLift(hardwareMap.get(DcMotor.class, "hinge"),
                 hardwareMap.get(DcMotor.class, "lift"));
 
@@ -60,7 +65,9 @@ public class GameTele extends LinearOpMode {
         waitForStart();
         runtime.reset();
         double lastmillis = runtime.milliseconds();
-        claw.setPosition(SampleClaw.ClawPosition.DOWN);
+
+        intake.setPosition(false);
+        boolean ipos = false;
 
         // run until the end of the match (driver presses STOP)
 
@@ -90,9 +97,18 @@ public class GameTele extends LinearOpMode {
             drive.setPower(lateral, axial, yaw);
 
             fwd.update(gamepad2.dpad_right);
-            back.update(gamepad2.dpad_left);
-            up.update(gamepad2.dpad_up);
-            dn.update(gamepad2.dpad_down);
+
+            if(fwd.pressed()) {
+                ipos = !ipos;
+                intake.setPosition(ipos);
+            }
+
+            if(gamepad2.right_bumper)
+                intake.setRunning(1);
+            else if(gamepad2.left_bumper)
+                intake.setRunning(-1);
+            else
+                intake.setRunning(0.5);
         }
         double delta = (runtime.milliseconds() - lastmillis);
 
