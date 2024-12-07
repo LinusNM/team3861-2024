@@ -19,12 +19,12 @@ public class ManualLift { // completely different approach, no liftmotor
     public int hingetarget = 0;
 
     public Encoder hingeEncoder;
-
+    // test test typing
     public ManualLift(DcMotor hinge, DcMotor lift) {
         this.hinge= hinge;
         this.lift = lift;
-        liftmax = HardwareConstants.liftmax;
-        hingemax = HardwareConstants.hingemax;
+        liftmax = 1000;//HardwareConstants.liftmax;
+        hingemax = 2000;//HardwareConstants.hingemax;
 
         hingeEncoder = new Encoder((DcMotorEx)hinge);
     }
@@ -56,17 +56,25 @@ public class ManualLift { // completely different approach, no liftmotor
         }
 
         if(Math.abs(vel) > hingemax) {
-            hinge.setPower(-0.5 * (vel/vel));
+            hinge.setPower(-0.5 * pol((int)vel));
         }
         else if(Math.abs(vel) < hingemin) {
-            hinge.setPower(0.5 * (vel/vel));
+            hinge.setPower(0.5 * pol((int)vel));
         }
-        else if(Math.abs(hinge.getCurrentPosition() - peak) <= 300 || ((cpos - posdiff) * (hingetarget - posdiff) <= 0)) {
-            hinge.setPower((posdiff/posdiff) * 0.75);
+        else if(Math.abs(hinge.getCurrentPosition() - peak) <= 300 || ((cpos - peak) * (hingetarget - peak) <= 0)) {
+            hinge.setPower(pol(posdiff) * 0.75);
         }
         else {
             hinge.setPower(0);
         }
+    }
+
+    private int pol(int a) {
+        if(a > 0)
+            return 1;
+        if (a<0)
+            return -1;
+        return 0;
     }
 
     private int clamp(int v, int a, int b) {
