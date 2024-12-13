@@ -106,6 +106,41 @@ public class AutoOp extends LinearOpMode {
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
         telemetry.addLine("RBE = Range, Bearing & Elevation");
     }
+
+    public static double xAdditional(double angle, double length) {
+        return (length) * (Math.cos(angle));
+    }
+
+    public static double yAdditional(double angle, double length) {
+        return (length) * (Math.sin(angle));
+    }
+
+    public double xPos(double xAdditional) {
+        return
+    }
+
+    public double yPos(double yAdditional) {
+
+    }
+
+    public static int apriltagposx(int id) {
+        if(id == 11) return 24;
+        if(id == 12) return 0;
+        if(id == 13) return 24;
+        if(id == 14) return 120;
+        if(id == 15) return 144;
+        if(id == 16) return 120;
+    }
+
+    public static int apriltagposy(int id) {
+        if(id == 11) return 0;
+        if(id == 12) return 72;
+        if(id == 13) return 144;
+        if(id == 14) return 144;
+        if(id == 15) return 72;
+        if(id == 16) return 0;
+    }
+
 }
 
 
