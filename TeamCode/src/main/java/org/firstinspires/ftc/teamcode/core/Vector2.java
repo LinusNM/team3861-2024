@@ -21,4 +21,11 @@ public class Vector2 {
         return new Vector2(arg * x, arg * y);
     }
 
+    public Vector2 rotate(double theta) {
+        // theta = -theta; // CW
+        return new Vector2(
+                x * Math.cos(theta) + y * Math.sin(theta),
+                y * Math.cos(theta) + x * Math.sin(theta)
+        );
+    }
 }
