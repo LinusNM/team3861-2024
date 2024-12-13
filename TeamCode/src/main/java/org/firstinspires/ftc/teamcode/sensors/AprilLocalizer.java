@@ -173,7 +173,6 @@ public class AprilLocalizer {
 
     }   // end method telemetryAprilTag()
 
-
     public FieldPosition calcPosition(int index) {
         if(index >= currentDetections.size() || index == -1)
             return null;
