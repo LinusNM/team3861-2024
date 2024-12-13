@@ -1,5 +1,22 @@
 package org.firstinspires.ftc.teamcode.sensors;
 
+import android.util.Pair;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.core.FieldPosition;
+import org.firstinspires.ftc.teamcode.core.Vector2;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class AprilLocalizer {
 
     private WebcamName name;
@@ -71,7 +88,7 @@ public class AprilLocalizer {
 
     public void setStreaming(boolean streaming) {
         if(streaming) {
-            visionPortal.reusmeStreaming();
+            visionPortal.resumeStreaming();
             return;
         }
 
@@ -115,7 +132,7 @@ public class AprilLocalizer {
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
-        builder.setCamera(hardwareMap.get(name);
+        builder.setCamera(name); // Webcam 1
 
         // Choose a camera resolution. Not all cameras support all resolutions.
         //builder.setCameraResolution(new Size(640, 480));
@@ -177,14 +194,14 @@ public class AprilLocalizer {
     public FieldPosition calcPosition(int index) {
         if(index >= currentDetections.size() || index == -1)
             return null;
-        AprilTagDetection det = currentDetections[index];
+        AprilTagDetection det = currentDetections.get(index);
 
         if(det.metadata == null) // detected but incalculable
             return null;
 
         FieldPosition tagPos = tagPositions.get(Integer.valueOf((int)det.id));
         Vector2 offset = new Vector2(det.robotPose.getPosition().x, det.robotPose.getPosition().y); // may be different vars
-        double theta = tagPos.angle + det.robotPose.getOrientation().getYaw(AngleUnit.RADS);
+        double theta = tagPos.angle + det.robotPose.getOrientation().getYaw(AngleUnit.RADIANS);
 
         Vector2 globalPos = tagPos.pos.sub(offset.rotate(theta));
         return new FieldPosition(globalPos, theta);
@@ -192,13 +209,13 @@ public class AprilLocalizer {
 
     public int getID(int id) {
         for(int i = 0; i < currentDetections.size(); i++) {
-            if(currentDetections[i].id == id)
+            if(currentDetections.get(i).id == id)
                 return i;
         }
         return -1;
     }
 
-    public FieldPosition calcPosition(int id) {
+    public FieldPosition calcPositionID(int id) {
         return calcPosition(getID(id));
     }
 
