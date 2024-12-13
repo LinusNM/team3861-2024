@@ -39,7 +39,6 @@ import org.firstinspires.ftc.teamcode.HardwareConstants;
 import org.firstinspires.ftc.teamcode.core.MecanumDrive;
 
 @Autonomous(name="auto push", group="Robot")
-@Disabled
 public class AutoPush extends LinearOpMode {
     private ElapsedTime     runtime = new ElapsedTime();
 
@@ -67,13 +66,14 @@ public class AutoPush extends LinearOpMode {
         drive.setDirection(HardwareConstants.driveDirs);
 
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 5.0)) {
-            drive.setPowerRaw(MecanumDrive.forward.mul(0.15));
+        while (opModeIsActive() && (runtime.seconds() < 2.0)) {
+            drive.setPowerRaw(MecanumDrive.forward.mul(-0.2));
         }
+
 
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.2)) {
-            drive.setPowerRaw(MecanumDrive.forward.mul(-0.2));
+            drive.setPowerRaw(MecanumDrive.forward.mul(0.2));
         }
 
         telemetry.addData("Path", "Complete");

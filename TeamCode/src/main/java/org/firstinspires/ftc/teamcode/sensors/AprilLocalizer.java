@@ -1,74 +1,12 @@
-/* Copyright (c) 2024 Dryw Wade. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+package org.firstinspires.ftc.teamcode.sensors;
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+public class AprilLocalizer {
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+    private WebcamName name;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+    private ArrayList<AprilTagDetection> currentDetections;
 
-import java.util.List;
-
-/*
- * This OpMode illustrates the basics of AprilTag based localization.
- *
- * For an introduction to AprilTags, see the FTC-DOCS link below:
- * https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
- *
- * In this sample, any visible tag ID will be detected and displayed, but only tags that are included in the default
- * "TagLibrary" will be used to compute the robot's location and orientation.  This default TagLibrary contains
- * the current Season's AprilTags and a small set of "test Tags" in the high number range.
- *
- * When an AprilTag in the TagLibrary is detected, the SDK provides location and orientation of the robot, relative to the field origin.
- * This information is provided in the "robotPose" member of the returned "detection".
- *
- * To learn about the Field Coordinate System that is defined for FTC (and used by this OpMode), see the FTC-DOCS link below:
- * https://ftc-docs.firstinspires.org/en/latest/game_specific_resources/field_coordinate_system/field-coordinate-system.html
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
- */
-@TeleOp(name = "Concept: AprilTag Localization", group = "Concept")
-@Disabled
-public class ConceptAprilTagLocalization extends LinearOpMode {
-
-    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+    public static HashMap<Integer, FieldPosition> tagPositions = new HashMap<Integer, FieldPosition>(); // init later
 
     /**
      * Variables to store the position and orientation of the camera on the robot. Setting these
@@ -109,44 +47,41 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
      */
     private VisionPortal visionPortal;
 
-    @Override
-    public void runOpMode() {
+    private Telemetry telemetry; // for testing
 
-        initAprilTag();
+    public AprilLocalizer(WebcamName name) {
+        this.name = name;
+    }
 
-        // Wait for the DS start button to be touched.
-        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch START to start OpMode");
-        telemetry.update();
-        waitForStart();
+    public AprilLocalizer(WebcamName name, Telemetry t) {
+        this(name);
+        telemetry = t;
+    }
 
-        while (opModeIsActive()) {
+    public ArrayList<AprilTagDetection> update() {
+        currentDetections = aprilTag.getDetections();
+        telemetryAprilTag();
+        return currentDetections;
+    }
 
-            telemetryAprilTag();
+    public ArrayList<AprilTagDetection> getCurrent() {
+        return currentDetections;
+    }
 
-            // Push telemetry to the Driver Station.
-            telemetry.update();
 
-            // Save CPU resources; can resume streaming when needed.
-            if (gamepad1.dpad_down) {
-                visionPortal.stopStreaming();
-            } else if (gamepad1.dpad_up) {
-                visionPortal.resumeStreaming();
-            }
-
-            // Share the CPU.
-            sleep(20);
+    public void setStreaming(boolean streaming) {
+        if(streaming) {
+            visionPortal.reusmeStreaming();
+            return;
         }
 
-        // Save more CPU resources when camera is no longer needed.
-        visionPortal.close();
-
-    }   // end method runOpMode()
+        visionPortal.stopStreaming();
+    }
 
     /**
      * Initialize the AprilTag processor.
      */
-    private void initAprilTag() {
+    public void init() {
 
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
@@ -180,12 +115,7 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
-        // Set the camera (webcam vs. built-in RC phone camera).
-        if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        } else {
-            builder.setCamera(BuiltinCameraDirection.BACK);
-        }
+        builder.setCamera(hardwareMap.get(name);
 
         // Choose a camera resolution. Not all cameras support all resolutions.
         //builder.setCameraResolution(new Size(640, 480));
@@ -210,20 +140,18 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
         // Disable or re-enable the aprilTag processor at any time.
         //visionPortal.setProcessorEnabled(aprilTag, true);
 
-    }   // end method initAprilTag()
+    }   // end method init()
 
     /**
      * Add telemetry about AprilTag detections.
      */
-    private void telemetryAprilTag() {
-
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+    private void telemetryAprilTag() { // Jonah - keeping this in for testing
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
-                
+
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
                         detection.robotPose.getPosition().x,
@@ -245,4 +173,37 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
 
     }   // end method telemetryAprilTag()
 
-}   // end class
+
+    public FieldPosition calcPosition(int index) {
+        if(index >= currentDetections.size() || index == -1)
+            return null;
+        AprilTagDetection det = currentDetections[index];
+
+        if(det.metadata == null) // detected but incalculable
+            return null;
+
+        FieldPosition tagPos = tagPositions.get(Integer.valueOf((int)det.id));
+        Vector2 offset = new Vector2(det.robotPose.getPosition().x, det.robotPose.getPosition().y); // may be different vars
+        double theta = tagPos.angle + det.robotPose.getOrientation().getYaw(AngleUnit.RADS);
+
+        Vector2 globalPos = tagPos.pos.sub(offset.rotate(theta));
+        return new FieldPosition(globalPos, theta);
+    }
+
+    public int getID(int id) {
+        for(int i = 0; i < currentDetections.size(); i++) {
+            if(currentDetections[i].id == id)
+                return i;
+        }
+        return -1;
+    }
+
+    public FieldPosition calcPosition(int id) {
+        return calcPosition(getID(id));
+    }
+
+    // <avg position, confidence>
+    public Pair<FieldPosition, Double> calcPositionFull() { // todo
+        return null;
+    }
+}
