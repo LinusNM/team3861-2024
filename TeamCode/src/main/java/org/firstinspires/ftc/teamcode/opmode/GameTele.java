@@ -67,6 +67,8 @@ public class GameTele extends LinearOpMode {
         runtime.reset();
         double lastmillis = runtime.milliseconds();
 
+        intake.drive.setPower(1000);
+
         intake.setPosition(false);
         boolean ipos = false;
 
@@ -104,15 +106,15 @@ public class GameTele extends LinearOpMode {
                 intake.setPosition(ipos);
             }
 
-            if(gamepad2.right_bumper)
+            /*if(gamepad2.right_bumper)
                 intake.setRunning(1);
             else if(gamepad2.left_bumper)
                 intake.setRunning(-1);
             else
-                intake.setRunning(0.5);
+                intake.setRunning(0.5);*/
 
             double delta = (runtime.milliseconds() - lastmillis);
-            
+
             lift.updateManual(gamepad2.left_stick_y, gamepad2.right_trigger - gamepad2.left_trigger);
 
             telemetry.addData("lift pos", lift.lift.getCurrentPosition());
@@ -120,7 +122,7 @@ public class GameTele extends LinearOpMode {
             telemetry.addData("hinge vel", lift.hingeEncoder.getCorrectedVelocity());
             telemetry.addData("lift target", lift.lift.getTargetPosition());
             telemetry.addData("hinge target", lift.hingetarget);
-            telemetry.addData("lift inc", delta * (gamepad2.right_trigger - gamepad2.left_trigger) / 2);
+            telemetry.addData("lift inc", (gamepad2.right_trigger - gamepad2.left_trigger));
 
             telemetry.addData("hinge pos", lift.getHingeAngle());
 
