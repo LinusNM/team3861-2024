@@ -12,6 +12,8 @@ public class ManualLift { // completely different approach, no liftmotor
 
     private int liftmin = 0, liftmax, hingemin = 0, hingemax;
 
+    private double deadzone = 0.05;
+
     private int hingeMaxVel = 600, hingeMinVel = 200;
 
     private static final int peak = 250;
@@ -36,40 +38,65 @@ public class ManualLift { // completely different approach, no liftmotor
 
         hingetarget = position;
         hinge.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        update();
     }
 
     public void incrementPosition(double position, double extension) {
         setPosition((int)(position + hinge.getCurrentPosition()), (int)(extension + lift.getCurrentPosition()));
     }
 
-    public void update() {
-        int cpos = hinge.getCurrentPosition();
-        int posdiff = hingetarget - cpos;
-        double vel = hingeEncoder.getCorrectedVelocity();
+    private double hingeCPrad;
+    private double liftCPrev = 384.5;
+    private double liftPulleyRadius = 1.91;
+    private double liftCPcm = liftCPrev * (1 / (2 * Math.PI * liftPulleyRadius)); // counts per cm
 
-        if(posdiff < (vel/4)) {
-            hinge.setTargetPosition(hingetarget);
-            hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            hinge.setPower(1);
-            return;
-        }
-
-        if(Math.abs(vel) > hingemax) {
-            hinge.setPower(-0.5 * pol((int)vel));
-        }
-        else if(Math.abs(vel) < hingemin) {
-            hinge.setPower(0.5 * pol((int)vel));
-        }
-        else if(Math.abs(hinge.getCurrentPosition() - peak) <= 300 || ((cpos - peak) * (hingetarget - peak) <= 0)) {
-            hinge.setPower(pol(posdiff) * 0.75);
-        }
-        else {
-            hinge.setPower(0);
-        }
+    public double getLiftExtension() {
+        return lift.getCurrentPosition()/liftCPcm;
     }
 
-    private int pol(int a) {
+    private double hingeStartAngle;
+
+    public double getHingeAngle() {
+        return hinge.getCurrentPosition()/hingeCPrad + hingeStartAngle;
+    }
+
+
+    private double maxFront = 27; // inches
+    private double maxBack = 10;
+    public int liftMax() {
+        double angle = getHingeAngle();
+        if(angle > Math.PI/4) { // back
+            return 1;
+        }
+        return (int)(maxFront/Math.cos(angle));
+    }
+
+    public void updateManual(double hinge_axis, double lift_axis) {
+        if(getLiftExtension() > 8) { // centimeters
+            hinge_axis = 0;
+        }
+        if(Math.abs(hinge_axis) >= deadzone) {
+            hinge.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            hinge.setPower(hinge_axis * 0.8);
+        }
+        else if (Math.abs(hingeEncoder.getCorrectedVelocity()) >= 300) {
+            hinge.setPower(-0.8 * pol(hingeEncoder.getCorrectedVelocity()));
+        }
+        else {
+            hinge.setTargetPosition((int)(hinge.getCurrentPosition() + (hingeEncoder.getCorrectedVelocity() * 0.1)));
+            hinge.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+
+        if(Math.abs(lift_axis) < deadzone) {
+            lift.setTargetPosition(lift.getCurrentPosition());
+            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            return;
+        }
+        //double liftpos = lift.getCurrentPosition();
+        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lift.setPower(0.5 * lift_axis);
+    }
+
+    private int pol(double a) {
         if(a > 0)
             return 1;
         if (a<0)

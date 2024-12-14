@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.core.*;
 import org.firstinspires.ftc.teamcode.subsystems.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift;
 import org.firstinspires.ftc.teamcode.subsystems.HingedLift.Position;
+import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.ManualLift;
 import org.firstinspires.ftc.teamcode.subsystems.SampleClaw;
 
@@ -74,7 +75,6 @@ public class GameTele extends LinearOpMode {
         double change = 0.001;
         double ypos = 0.367;
 
-        lift.lift.setPower(0.25);
         while (opModeIsActive()) {
 
             if (gamepad2.dpad_down) {
@@ -110,16 +110,10 @@ public class GameTele extends LinearOpMode {
                 intake.setRunning(-1);
             else
                 intake.setRunning(0.5);
-            back.update(gamepad2.dpad_left);
-            up.update(gamepad2.dpad_up);
-            dn.update(gamepad2.dpad_down);
 
             double delta = (runtime.milliseconds() - lastmillis);
-
-            if (Math.abs(gamepad2.left_stick_y) > 0.2 || Math.abs(gamepad2.right_trigger - gamepad2.left_trigger) > 0.2)
-                lift.incrementPosition(delta * gamepad2.left_stick_y / 2, (delta * (gamepad2.right_trigger - gamepad2.left_trigger)) / 2); // 500 cps
-
-            lift.update();
+            
+            lift.updateManual(gamepad2.left_stick_y, gamepad2.right_trigger - gamepad2.left_trigger);
 
             telemetry.addData("lift pos", lift.lift.getCurrentPosition());
             telemetry.addData("hinge pos", lift.hinge.getCurrentPosition());
@@ -127,6 +121,8 @@ public class GameTele extends LinearOpMode {
             telemetry.addData("lift target", lift.lift.getTargetPosition());
             telemetry.addData("hinge target", lift.hingetarget);
             telemetry.addData("lift inc", delta * (gamepad2.right_trigger - gamepad2.left_trigger) / 2);
+
+            telemetry.addData("hinge pos", lift.getHingeAngle());
 
             telemetry.update();
             lastmillis = runtime.milliseconds();

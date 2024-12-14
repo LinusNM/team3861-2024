@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 public class Lift {
     /*
       ALL MASS UNITS MUST BE IN KG
@@ -12,6 +14,11 @@ public class Lift {
 
     public DcMotor hinge;
     public DcMotor lift;
+
+    public Lift(DcMotor hinge, DcMotor lift) {
+        this.hinge = hinge;
+        this.lift = lift;
+    }
 
     private double base_mass = 0.130; // mass of base segment (metal mount for lift)
     private double slide_mass = 0.243; // mass of each slide
@@ -42,9 +49,9 @@ public class Lift {
     }
 
     public double gravityComponent(double extension, double theta) {
-        return gravityComponent(base_start, base_length, base_mass, theta) +
-                gravityComponent(slide_start + (extension/2), slide_length, slide_mass, theta) +
-                gravityComponent(slide_start + extension, slide_length, slide_mass, theta);
+        return gravityComponent(base_start, base_len, base_mass, theta) +
+                gravityComponent(slide_start + (extension/2), slide_len, slide_mass, theta) +
+                gravityComponent(slide_start + extension, slide_len, slide_mass, theta);
     }
 
 
@@ -59,9 +66,9 @@ public class Lift {
     private double hingeCPrad;      // counts per radian
     private double hingePeakTorque; // torque at input 1, regardless of software max
 
-    private double liftCPrev;
+    private double liftCPrev = 384.5;
     private double liftPulleyRadius = 1.91;
-    private double liftCPcm = liftCPrev * (1 / (2 * Math.pi * liftPulleyRadius)); // counts per cm
+    private double liftCPcm = liftCPrev * (1 / (2 * Math.PI * liftPulleyRadius)); // counts per cm
 
     private double hingeStartAngle;
 
